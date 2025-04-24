@@ -20,3 +20,6 @@ reset-db:
 
 migrate:
 	supabase migration up --linked
+
+push:
+	git add . && codegpt commit . && git push
