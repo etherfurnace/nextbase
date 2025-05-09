@@ -12,3 +12,5 @@ ALTER TYPE app_permission ADD VALUE IF NOT EXISTS 'samples.read';
 ALTER TYPE app_permission ADD VALUE IF NOT EXISTS 'samples.write';
 ALTER TYPE app_permission ADD VALUE IF NOT EXISTS 'training_tasks.read';
 ALTER TYPE app_permission ADD VALUE IF NOT EXISTS 'training_tasks.write';
+ALTER TYPE app_permission ADD VALUE IF NOT EXISTS 'training_history.read';
+ALTER TYPE app_permission ADD VALUE IF NOT EXISTS 'training_history.write';

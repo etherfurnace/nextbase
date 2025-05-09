@@ -73,3 +73,28 @@ CREATE POLICY "Allow (scoped) insert, update, delete access to 'training_jobs' t
         jwt_tenant_id() = mlops.get_tenant_id_by_user_id(user_id) AND
         jwt_has_permission('training_tasks.write')
     );
+
+--- -----------------------------------------
+--- training_job_history 表策略
+--- -----------------------------------------
+ALTER TABLE IF EXISTS mlops.training_job_history ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Allow (scoped) read access on 'training_job_history' to users with permissions 'training_history.read'"
+    ON mlops.training_job_history
+    FOR SELECT
+    USING (
+        jwt_tenant_id() = mlops.get_tenant_id_by_user_id(user_id) AND
+        jwt_has_permission('training_history.read')
+    );
+
+CREATE POLICY "Allow (scoped) insert, update, delete access to 'training_job_history' to users with permissions 'training_history.write'"
+    ON mlops.training_job_history
+    FOR ALL
+    USING (
+        jwt_tenant_id() = mlops.get_tenant_id_by_user_id(user_id) AND
+        jwt_has_permission('training_history.write')
+    )
+    WITH CHECK (
+        jwt_tenant_id() = mlops.get_tenant_id_by_user_id(user_id) AND
+        jwt_has_permission('training_history.write')
+    );
