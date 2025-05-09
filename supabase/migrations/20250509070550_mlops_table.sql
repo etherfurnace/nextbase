@@ -19,12 +19,14 @@ CREATE TYPE mlops.training_status AS ENUM (
 --- ----------------------------------------------------------------------------
 CREATE TABLE mlops.datasets (
     id             BIGSERIAL PRIMARY KEY,
+    tenant_id      BIGINT REFERENCES tenants ON DELETE CASCADE NOT NULL,
     name           TEXT NOT NULL,
     description    TEXT,
     dataset_type   mlops.dataset_type NOT NULL,
     created_at     TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
     updated_at     TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
-    user_id     UUID REFERENCES auth.users ON DELETE CASCADE NOT NULL
+    user_id     UUID REFERENCES auth.users ON DELETE CASCADE NOT NULL,
+    UNIQUE         (tenant_id, name)
 );
 COMMENT ON TABLE mlops.datasets IS '数据集';
 
@@ -33,6 +35,7 @@ COMMENT ON TABLE mlops.datasets IS '数据集';
 --- ----------------------------------------------------------------------------
 CREATE TABLE mlops.dataset_samples (
     id             BIGSERIAL PRIMARY KEY,
+    tenant_id      BIGINT REFERENCES tenants ON DELETE CASCADE NOT NULL,
     dataset_id     BIGINT REFERENCES mlops.datasets(id) ON DELETE CASCADE NOT NULL,
     name           TEXT NOT NULL,
     storage_path   TEXT NOT NULL, -- 存储在Supabase Storage中的路径
@@ -48,15 +51,17 @@ COMMENT ON TABLE mlops.dataset_samples IS '数据集样本表';
 --- ----------------------------------------------------------------------------
 CREATE TABLE mlops.training_jobs (
     id             BIGSERIAL PRIMARY KEY,
+    tenant_id      BIGINT REFERENCES tenants ON DELETE CASCADE NOT NULL,
     name           TEXT NOT NULL,
     description    TEXT,
     dataset_id     BIGINT REFERENCES mlops.datasets(id) ON DELETE SET NULL,
     job_type       mlops.dataset_type NOT NULL,
-    latest_status  mlops.training_status NOT NULL DEFAULT 'not_started',
-    latest_run_id  BIGINT, -- 引用最新一次运行的ID
+    latest_status  mlops.training_status NOT NULL DEFAULT 'not_started',  --触发器会自动更新这个值
+    latest_run_id  BIGINT, -- 引用最新一次运行的ID，触发器会自动更新这个值
     created_at     TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
     updated_at     TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
-    user_id        UUID REFERENCES auth.users(id) NOT NULL
+    user_id        UUID REFERENCES auth.users(id) NOT NULL,
+    UNIQUE         (tenant_id, name)
 );
 COMMENT ON TABLE mlops.training_jobs IS '训练任务表';
 
@@ -65,6 +70,7 @@ COMMENT ON TABLE mlops.training_jobs IS '训练任务表';
 --- ----------------------------------------------------------------------------
 CREATE TABLE mlops.training_job_history (
     id             BIGSERIAL PRIMARY KEY,
+    tenant_id      BIGINT REFERENCES tenants ON DELETE CASCADE NOT NULL,
     job_id         BIGINT REFERENCES mlops.training_jobs(id) ON DELETE CASCADE NOT NULL,
     parameters     JSONB NOT NULL,
     status         mlops.training_status NOT NULL DEFAULT 'not_started',

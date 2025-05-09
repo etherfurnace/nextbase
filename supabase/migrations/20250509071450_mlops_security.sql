@@ -12,7 +12,7 @@ CREATE POLICY "Allow (scoped) read access on 'datasets' to users with permission
     ON mlops.datasets
     FOR SELECT
     USING (
-        jwt_tenant_id() = mlops.get_tenant_id_by_user_id(user_id) AND
+        jwt_tenant_id() = tenant_id AND
         jwt_has_permission('datasets.read')
     );
 
@@ -20,11 +20,11 @@ CREATE POLICY "Allow (scoped) insert, update, delete access to 'datasets' to use
     ON mlops.datasets
     FOR ALL
     USING (
-        jwt_tenant_id() = mlops.get_tenant_id_by_user_id(user_id) AND
+        jwt_tenant_id() = tenant_id AND
         jwt_has_permission('datasets.write')
     )
     WITH CHECK (
-        jwt_tenant_id() = mlops.get_tenant_id_by_user_id(user_id) AND
+        jwt_tenant_id() = tenant_id AND
         jwt_has_permission('datasets.write')
     );
 
@@ -35,7 +35,7 @@ CREATE POLICY "Allow (scoped) read access on 'dataset_samples' to users with per
     ON mlops.dataset_samples
     FOR SELECT
     USING (
-        jwt_tenant_id() = mlops.get_tenant_id_by_user_id(user_id) AND
+        jwt_tenant_id() = tenant_id AND
         jwt_has_permission('samples.read')
     );
 
@@ -43,11 +43,11 @@ CREATE POLICY "Allow (scoped) insert, update, delete access to 'dataset_samples'
     ON mlops.dataset_samples
     FOR ALL
     USING (
-        jwt_tenant_id() = mlops.get_tenant_id_by_user_id(user_id) AND
+        jwt_tenant_id() = tenant_id AND
         jwt_has_permission('samples.write')
     )
     WITH CHECK (
-        jwt_tenant_id() = mlops.get_tenant_id_by_user_id(user_id) AND
+        jwt_tenant_id() = tenant_id AND
         jwt_has_permission('samples.write')
     );
 
@@ -58,7 +58,7 @@ CREATE POLICY "Allow (scoped) read access on 'training_jobs' to users with permi
     ON mlops.training_jobs
     FOR SELECT
     USING (
-        jwt_tenant_id() = mlops.get_tenant_id_by_user_id(user_id) AND
+        jwt_tenant_id() = tenant_id AND
         jwt_has_permission('training_tasks.read')
     );
 
@@ -66,11 +66,11 @@ CREATE POLICY "Allow (scoped) insert, update, delete access to 'training_jobs' t
     ON mlops.training_jobs
     FOR ALL
     USING (
-        jwt_tenant_id() = mlops.get_tenant_id_by_user_id(user_id) AND
+        jwt_tenant_id() = tenant_id AND
         jwt_has_permission('training_tasks.write')
     )
     WITH CHECK (
-        jwt_tenant_id() = mlops.get_tenant_id_by_user_id(user_id) AND
+        jwt_tenant_id() = tenant_id AND
         jwt_has_permission('training_tasks.write')
     );
 
@@ -83,7 +83,7 @@ CREATE POLICY "Allow (scoped) read access on 'training_job_history' to users wit
     ON mlops.training_job_history
     FOR SELECT
     USING (
-        jwt_tenant_id() = mlops.get_tenant_id_by_user_id(user_id) AND
+        jwt_tenant_id() = tenant_id AND
         jwt_has_permission('training_history.read')
     );
 
@@ -91,10 +91,10 @@ CREATE POLICY "Allow (scoped) insert, update, delete access to 'training_job_his
     ON mlops.training_job_history
     FOR ALL
     USING (
-        jwt_tenant_id() = mlops.get_tenant_id_by_user_id(user_id) AND
+        jwt_tenant_id() = tenant_id AND
         jwt_has_permission('training_history.write')
     )
     WITH CHECK (
-        jwt_tenant_id() = mlops.get_tenant_id_by_user_id(user_id) AND
+        jwt_tenant_id() = tenant_id AND
         jwt_has_permission('training_history.write')
     );
