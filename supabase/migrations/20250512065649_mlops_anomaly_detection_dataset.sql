@@ -11,6 +11,7 @@ CREATE TABLE mlops.anomaly_detection_datasets (
     tenant_id      BIGINT REFERENCES tenants ON DELETE CASCADE NOT NULL,
     name           TEXT NOT NULL,
     description    TEXT,
+    has_labels     BOOLEAN NOT NULL DEFAULT FALSE,
     created_at     TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
     updated_at     TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
     user_id     UUID REFERENCES auth.users ON DELETE CASCADE NOT NULL,
