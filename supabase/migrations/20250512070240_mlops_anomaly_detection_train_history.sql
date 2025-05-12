@@ -11,10 +11,12 @@ CREATE TABLE mlops.anomaly_detection_train_history (
     id             BIGSERIAL PRIMARY KEY,
     tenant_id      BIGINT REFERENCES tenants ON DELETE CASCADE NOT NULL,
     job_id         BIGINT REFERENCES mlops.anomaly_detection_train_jobs(id) ON DELETE CASCADE NOT NULL,
-    parameters     JSONB NOT NULL,
+    train_data_id  BIGINT REFERENCES mlops.anomaly_detection_train_data(id) ON DELETE CASCADE NOT NULL,
+    parameters     JSONB NOT NULL, -- 训练参数
     status         mlops.training_status NOT NULL DEFAULT 'not_started',
     model_path     TEXT, -- 模型权重在Storage中的存储路径
     metrics        JSONB, -- 评价指标
+    
     created_at     TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
     updated_at     TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
     started_at     TIMESTAMP WITH TIME ZONE,
