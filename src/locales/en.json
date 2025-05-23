@@ -1,0 +1,14 @@
+{
+  "common": {
+    "login": "Login",
+    "logout": "Logout",
+    "select": "Select",
+    "search": "Search",
+    "noData": "No data",
+    "addNew": "Add New",
+    "edit": "Edit",
+    "delete": "Delete",
+    "confirm": "Confirm",
+    "cancel": "Cancel"
+  }
+}

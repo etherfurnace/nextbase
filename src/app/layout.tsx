@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
+import Script from 'next/script';
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import AuthProvider from "../context/AuthProvider";
+import { LocaleProvider } from "../context/LocaleProvider";
+import Header from "@/components/header";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -24,10 +28,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <Script src="/iconfont.js" strategy="afterInteractive"/>
+      </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased pt-12`}
       >
-        {children}
+        <AuthProvider>
+          <LocaleProvider>
+            <Header /> {/* Header is now a Client Component */}
+            {children}
+          </LocaleProvider>
+        </AuthProvider>
       </body>
     </html>
   );
