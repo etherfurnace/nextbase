@@ -1,0 +1,18 @@
+{
+  "zh": [
+    {
+      "title": "数据集",
+      "icon": "UserOutlined",
+      "url": "/dataset/manage",
+      "name": "example"
+    }
+  ],
+  "en": [
+    {
+      "title": "DataSet",
+      "icon": "UserOutlined",
+      "url": "/dataset/manage",
+      "name": "example"
+    }
+  ]
+}
