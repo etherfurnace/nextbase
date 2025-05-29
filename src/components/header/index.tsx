@@ -80,7 +80,7 @@ export default function Header() {
           <a
             key={item.url}
             href={item.url}
-            className={`flex items-center gap-2 text-sm ${pathname === item.url ? "text-blue-500 font-bold" : "text-gray-700 hover:text-blue-500"
+            className={`flex items-center gap-2 text-sm ${pathname.includes(item.url) ? "text-blue-500 font-bold" : "text-gray-700 hover:text-blue-500"
               }`}
           >
             {renderIcon(item.icon)}

@@ -22,3 +22,24 @@ export interface EntityListProps<T> {
   onCardClick?: (item: T) => void;
   changeFilter?: (value: string[]) => void;
 }
+
+export interface TourItem {
+  title: string;
+  description: string;
+  cover?: string;
+  target: string;
+  mask?: any;
+  order: number;
+}
+
+export interface MenuItem {
+  name: string;
+  display_name?: string;
+  url: string;
+  icon: string;
+  title: string;
+  operation: string[];
+  tour?: TourItem;
+  isNotMenuItem?: boolean;
+  children?: MenuItem[];
+}
