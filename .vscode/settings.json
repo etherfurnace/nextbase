@@ -1,6 +1,6 @@
 {
   "[typescript]": {
-    "editor.defaultFormatter": "denoland.vscode-deno"
+    "editor.defaultFormatter": "vscode.typescript-language-features"
   },
   "deno.enablePaths": [
     "supabase/functions"
@@ -23,5 +23,10 @@
   ],
   "files.associations": {
     "wrangler.json": "jsonc"
-  }
+  },
+  "i18n-ally.localesPaths": [
+    "src/locales",
+    "src/app/(core)/api/locales"
+  ],
+  "i18n-ally.keystyle": "nested"
 }

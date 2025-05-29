@@ -5,12 +5,19 @@ declare module "next-auth" {
     user: {
       id: string;
       email: string;
+      
     } & DefaultSession["user"];
+    supabase: {
+      access_token: string;
+      refresh_token: string;
+    };
   }
 
   interface User {
     id: string;
     email: string;
+    access_token: string;
+    refresh_token: string;
   }
 }
 

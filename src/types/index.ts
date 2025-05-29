@@ -1,3 +1,5 @@
+import type { MenuProps } from 'antd';
+
 export interface Option {
   label: string;
   value: string;
@@ -12,8 +14,8 @@ export interface EntityListProps<T> {
   filter?: boolean;
   filterLoading?: boolean;
   operateSection?: React.ReactNode;
-  infoText?: string;
-  menuActions?: (item: T) => React.ReactNode;
+  infoText?: string | Function;
+  menuActions?: (item: T) => MenuProps['items'];
   singleAction?: (item: T) => { text: string, onClick: (item: T) => void };
   openModal?: (item?: T) => void;
   onSearch?: (value: string) => void;

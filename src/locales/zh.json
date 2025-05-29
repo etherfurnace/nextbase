@@ -9,6 +9,21 @@
     "edit": "编辑",
     "delete": "删除",
     "confirm": "确认",
-    "cancel": "取消"
+    "cancel": "取消",
+    "name": "名称",
+    "inputMsg": "请输入",
+    "selectMsg": "请选择",
+    "successfullyDeleted": "成功删除"
+  },
+  "datasets": {
+    "addform": "新增数据集",
+    "description": "简介",
+    "editform": "编辑数据集",
+    "type": "类型",
+    "delDataset": "删除数据集",
+    "delDatasetInfo": "确认删除数据集吗？",
+    "anomaly": "单一指标异常检测",
+    "forecast": "时间序列预测",
+    "log": "日志"
   }
 }

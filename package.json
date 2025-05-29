@@ -3,7 +3,7 @@
 	"version": "0.1.0",
 	"private": true,
 	"scripts": {
-		"dev": "next dev --turbopack",
+		"dev": "next dev",
 		"build": "next build",
 		"start": "next start",
 		"lint": "next lint",
@@ -15,6 +15,7 @@
 	},
 	"dependencies": {
 		"@ant-design/icons": "^6.0.0",
+		"@ant-design/v5-patch-for-react-19": "^1.0.3",
 		"@supabase/supabase-js": "^2.49.4",
 		"antd": "^5.24.8",
 		"intl-messageformat": "^10.7.16",
@@ -33,6 +34,8 @@
 		"eslint": "^9",
 		"eslint-config-next": "15.3.1",
 		"tailwindcss": "^4",
+		"sass": "^1.81.0",
+    "sass-embedded": "^1.81.0",
 		"typescript": "^5",
 		"vercel": "^41.6.2",
 		"wrangler": "^4.13.0"
