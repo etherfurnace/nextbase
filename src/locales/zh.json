@@ -22,7 +22,7 @@
     "type": "类型",
     "delDataset": "删除数据集",
     "delDatasetInfo": "确认删除数据集吗？",
-    "anomaly": "单一指标异常检测",
+    "anomaly": "单指标异常检测",
     "forecast": "时间序列预测",
     "log": "日志"
   }

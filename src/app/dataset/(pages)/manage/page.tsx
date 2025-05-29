@@ -43,16 +43,8 @@ const DatasetManagePage = () => {
           console.log(error)
           setUser(data.user);
         })
-      // supabase.auth.signInWithPassword({
-      //   email: 'lizhen@weops.com',
-      //   password: 'CzpbFT42QfWbw8dZP7By'
-      // }).then((res) => {
-      //   const { data, error } = res;
-      //   console.log(data, error);
-      //   setUser(data.user)
-      // })
     }
-  }, [session]);
+  }, [session, activeTab]);
 
   useEffect(() => {
     if (!loading) {
