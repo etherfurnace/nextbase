@@ -70,7 +70,7 @@ const authOptions: AuthOptions = {
       session.supabase = {
         access_token: token.access_token as string,
         refresh_token: token.refresh_token as string,
-      }
+      };
       return session;
     },
     async redirect({ url, baseUrl }) {

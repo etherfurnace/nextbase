@@ -5,6 +5,10 @@
   --foreground: #171717;
 }
 
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-fill-4) var(--color-bg-7);
+}
 
 *::-webkit-scrollbar {
   width: 6px;
@@ -60,4 +64,9 @@ body {
   vertical-align: -0.15em;
   fill: currentColor !important;
   overflow: hidden;
+}
+
+.ant-popconfirm-buttons  {
+    display: flex;
+    flex-direction: row-reverse;
 }

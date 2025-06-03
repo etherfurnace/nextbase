@@ -1,4 +1,5 @@
 import type { MenuProps } from 'antd';
+import { JSX } from 'react';
 
 export interface Option {
   label: string;
@@ -42,4 +43,18 @@ export interface MenuItem {
   tour?: TourItem;
   isNotMenuItem?: boolean;
   children?: MenuItem[];
+}
+
+export interface ColumnItem {
+  title: string;
+  dataIndex: string;
+  key: string;
+  render?: (_: unknown, record: any) => JSX.Element;
+  [key: string]: unknown;
+}
+
+export interface GroupFieldItem {
+  title: string;
+  key: string;
+  child: ColumnItem[];
 }

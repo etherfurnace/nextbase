@@ -6,6 +6,7 @@
     "search": "搜索",
     "noData": "没有数据",
     "addNew": "添加新项",
+    "addSuccess": "添加成功",
     "edit": "编辑",
     "delete": "删除",
     "confirm": "确认",
@@ -13,7 +14,13 @@
     "name": "名称",
     "inputMsg": "请输入",
     "selectMsg": "请选择",
-    "successfullyDeleted": "成功删除"
+    "successfullyDeleted": "成功删除",
+    "action": "操作",
+    "selectAll": "全选",
+    "selected": "已选择",
+    "fieldSetting": "列表字段设置",
+    "items": "项",
+    "clear": "清空"
   },
   "datasets": {
     "addform": "新增数据集",
@@ -25,6 +32,11 @@
     "anomaly": "单指标异常检测",
     "forecast": "时间序列预测",
     "log": "日志",
-    "uploadSuccess": "上传成功"
+    "anomalyTitle": "异常点",
+    "annotate": "标注",
+    "upload": "上传",
+    "uploadText": "拖动文件或文件夹到此处上传",
+    "deleteTitle": "删除文件",
+    "deleteContent": "确认要删除此文件吗？"
   }
 }

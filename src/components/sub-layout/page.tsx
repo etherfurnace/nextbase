@@ -64,7 +64,7 @@ const SubLayout: React.FC<WithSideMenuLayoutProps> = ({
             </div>
           )}
           <div className="w-full flex grow flex-1 h-full">
-            {showSideMenu && (
+            {showSideMenu && menuItems.length > 0 &&  (
               <SideMenu
                 menuItems={menuItems}
                 showBackButton={showBackButton}

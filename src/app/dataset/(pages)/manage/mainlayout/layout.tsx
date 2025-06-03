@@ -9,20 +9,20 @@ import { useRouter } from 'next/navigation';
 import { MenuItem } from '@/types';
 
 const Collectorintro = () => {
-    // const searchParams = new URLSearchParams(window.location.search);
-    const name = 'name';
-    return (
-      <div className="flex h-[58px] flex-col items-center justify-center">
-        {/* <Icon
+  // const searchParams = new URLSearchParams(window.location.search);
+  const name = 'WeOps';
+  return (
+    <div className="flex h-[58px] flex-col items-center justify-center">
+      {/* <Icon
           type="UserOutlined"
           className="h-16 w-16"
           style={{ height: '36px', width: '36px' }}
         ></Icon> */}
-        <div className='flex justify-center mb-2'><BankOutlined className='text-2xl mr-3' twoToneColor="#eb2f96" /><h1 className="text-center leading-[24px]">{name}</h1></div>
-        <p>数据列表</p>
-      </div>
-    );
-  };
+      <div className='flex justify-center mb-2'><BankOutlined className='text-2xl mr-3' twoToneColor="#eb2f96" /><h1 className="text-center leading-[24px]">{name}</h1></div>
+      <p>数据列表</p>
+    </div>
+  );
+};
 
 const CollectorLayout = ({
   children,

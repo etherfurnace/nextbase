@@ -14,7 +14,25 @@ interface ModalRef {
   showModal: (config: ModalConfig) => void;
 }
 
+interface AnomalyDataSet {
+  id: number,
+  tenant_id: number,
+  description: string,
+  has_labels: boolean,
+  created_at: string,
+  user_id: string,
+  [key: string]: any
+}
+
+interface UserProfile {
+  id: string,
+  first_name: string,
+  last_name: string
+}
+
 export type {
   ModalConfig,
-  ModalRef
+  ModalRef,
+  UserProfile,
+  AnomalyDataSet
 }

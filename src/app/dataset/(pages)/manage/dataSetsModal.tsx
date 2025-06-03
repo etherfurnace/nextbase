@@ -35,7 +35,6 @@ const DatasetModal = ({ ref, supabase, user, options, onSuccess }: DatasetModalP
       setType(type);
       setTitle(title);
       setFormData(form);
-      console.log(form);
     }
   }));
 
@@ -68,6 +67,7 @@ const DatasetModal = ({ ref, supabase, user, options, onSuccess }: DatasetModalP
         if (error) {
           message.error(`Error: ${error.code} ${error.message}`);
         } else {
+          message.success(t('common.addSuccess'))
           setIsModalOpen(false);
           onSuccess();
         }

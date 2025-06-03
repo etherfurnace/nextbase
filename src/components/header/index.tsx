@@ -42,6 +42,7 @@ export default function Header() {
   }, []);
 
   const handleLogout = async () => {
+    console.log('sign out!')
     await supabase.auth.signOut();
     signOut();
   };
@@ -52,22 +53,17 @@ export default function Header() {
   };
 
   const handleMenuClick = ({ key }: any) => {
+    console.log(key)
     if (key === 'logout') handleLogout();
     setDropdownVisible(false);
   };
 
-  const userMenu = (
-    <Menu
-      className="min-w-[180px]"
-      onClick={handleMenuClick}
-      items={[
-        {
-          key: 'logout',
-          label: t('common.logout'),
-        }
-      ]}
-    />
-  );
+  const items: MenuProps['items'] = [
+    {
+      key: 'logout',
+      label: (<button>{t('common.logout')}</button>)
+    }
+  ]
 
   return (
     <header className="fixed top-0 left-0 w-full flex justify-between items-center px-4 py-2 shadow-xs z-10">
@@ -92,10 +88,13 @@ export default function Header() {
         {session?.user ? (
           <div className="flex items-center gap-2">
             <Dropdown
-              overlay={userMenu}
+              menu={{
+                items,
+                onClick: handleMenuClick
+               }}
               trigger={['click']}
-              visible={dropdownVisible}
-              onVisibleChange={setDropdownVisible}
+              open={dropdownVisible}
+              onOpenChange={setDropdownVisible}
             >
               <a className='cursor-pointer' onClick={(e) => e.preventDefault()}>
                 <div className="flex items-center">
@@ -103,21 +102,14 @@ export default function Header() {
                     {session.user.email.charAt(0).toUpperCase()}
                   </div>
                   <span className="text-sm text-gray-950 mr-1">{session.user.email}</span>
-                  <DownOutlined style={{ fontSize: '10px',color: 'black' }} />
+                  <DownOutlined style={{ fontSize: '10px', color: 'black' }} />
                 </div>
               </a>
             </Dropdown>
-
-            {/* <button
-              onClick={handleLogout}
-              className="text-sm px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-            >
-              {t('common.logout')}
-            </button> */}
           </div>
         ) : (
           <button
-            onClick={() => window.location.href = "/api/auth/signin"}
+            onClick={() => window.location.href = "/api/auth/signin?csrf=true"}
             className="text-sm px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
           >
             {t('common.login')}

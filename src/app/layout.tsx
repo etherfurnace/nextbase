@@ -4,7 +4,9 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import AuthProvider from "../context/AuthProvider";
 import { LocaleProvider } from "../context/LocaleProvider";
+import { UserInfoProvider } from '@/context/userInfo';
 import Header from "@/components/header";
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,15 +31,19 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <Script src="/iconfont.js" strategy="afterInteractive"/>
+        <Script src="/iconfont.js" strategy="afterInteractive" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased pt-12`}
       >
         <AuthProvider>
           <LocaleProvider>
-            <Header /> {/* Header is now a Client Component */}
-            {children}
+            <UserInfoProvider>
+              <div className="flex flex-col">
+                <Header /> {/* Header is now a Client Component */}
+                {children}
+              </div>
+            </UserInfoProvider>
           </LocaleProvider>
         </AuthProvider>
       </body>
