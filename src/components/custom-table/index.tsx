@@ -1,6 +1,6 @@
-'use client'
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { Table, TableProps, Pagination } from 'antd';
+import '@ant-design/v5-patch-for-react-19';
 import { SettingFilled, HolderOutlined } from '@ant-design/icons';
 import customTableStyle from './index.module.scss';
 import FieldSettingModal from './fieldSettingModal';
@@ -252,6 +252,7 @@ const CustomTable = <T extends object>({
       />
       {pagination && !loading && !!pagination.total && (<div className="absolute right-0 bottom-0 flex justify-end">
         <Pagination
+          size='small'
           total={pagination?.total}
           showSizeChanger
           current={pagination?.current}

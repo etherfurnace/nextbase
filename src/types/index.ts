@@ -58,3 +58,67 @@ export interface GroupFieldItem {
   key: string;
   child: ColumnItem[];
 }
+
+export interface MetricItem {
+  id: number;
+  metric_group: number;
+  metric_object: number;
+  name: string;
+  type: string;
+  display_name?: string;
+  display_description?: string;
+  instance_id_keys?: string[];
+  dimensions: any[];
+  query?: string;
+  unit?: string;
+  displayType?: string;
+  description?: string;
+  viewData?: any[];
+  style?: {
+    width: string;
+    height: string;
+  };
+  [key: string]: unknown;
+}
+
+export interface ListItem {
+  title?: string;
+  label?: string;
+  name?: string;
+  display_name?: string;
+  id?: string | number;
+  value?: string | number;
+}
+
+export interface TabItem {
+  key: string;
+  label: string;
+  name?: string;
+  children?: JSX.Element | string;
+}
+
+export interface ChartData {
+  timestamp: number;
+  value1?: number;
+  value2?: number;
+  details?: Record<string, any>;
+  [key: string]: unknown;
+}
+
+export interface TableDataItem {
+  id?: number | string;
+  [key: string]: any;
+}
+
+export interface ThresholdField {
+  level: string;
+  method: string;
+  value: number | null;
+}
+
+export interface LevelMap {
+  critical: string;
+  error: string;
+  warning: string;
+  [key: string]: unknown;
+}

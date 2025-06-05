@@ -13,8 +13,7 @@ export const UserInfoProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const { data: session } = useSession();
 
   useEffect(() => {
-    if(!session) return;
-    console.log('session change');
+    if (!session) return;
     const isToken = session?.supabase;
     const isLogin = session?.user;
     if (isToken && isLogin) {
@@ -22,10 +21,19 @@ export const UserInfoProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         access_token: session.supabase.access_token,
         refresh_token: session.supabase.refresh_token,
       });
-    } else {
-      supabase.auth.signOut();
-      signOut();
-    }
+      supabase.auth.getSession().then((res) => {
+        const { data, error } = res;
+        console.log(res);
+        if (!data.session) {
+          supabase.auth.signOut();
+          signOut();
+        }
+      })
+    } 
+    // else {
+    //   supabase.auth.signOut();
+    //   signOut();
+    // }
   }, [session]);
 
   return (

@@ -47,6 +47,10 @@ const UploadModal = ({ ref, onSuccess }: { ref: any; onSuccess: () => void }) =>
   const handleSubmit = async () => {
     setConfirmLoading(true);
     const file = fileList[0];
+    if(!file) {
+      setConfirmLoading(false);
+      return message.error('请上传文件');
+    }
     const { data, error } = await supabase.storage
       .from('datasets')
       .upload(`${formData.folder}/${file.name}`, file.originFileObj, {
@@ -67,17 +71,31 @@ const UploadModal = ({ ref, onSuccess }: { ref: any; onSuccess: () => void }) =>
       setVisiable(false);
       message.success(t('datasets.uploadSuccess'));
       onSuccess();
-      
     } else {
       setConfirmLoading(false);
       message.error(`${error.message}`);
     }
-
   };
 
   const handleCancel = () => {
     setVisiable(false);
   };
+
+  const downloadTemplate = async () => {
+    const { data, error } = await supabase.storage.from('datasets').download('template.csv');
+    if(data) {
+      const url = URL.createObjectURL(data);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'template.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } else {
+      message.error('下载失败');
+    }
+  }
 
   return (
     <OperateModal
@@ -99,7 +117,7 @@ const UploadModal = ({ ref, onSuccess }: { ref: any; onSuccess: () => void }) =>
         </p>
         <p className="ant-upload-text">{t('datasets.uploadText')}</p>
       </Dragger>
-      <p>仅支持csv格式的文件，点击<a href="">下载模板</a></p>
+      <p>仅支持csv格式的文件，点击<Button type='link' onClick={downloadTemplate}>下载模板</Button></p>
     </OperateModal>
   )
 };
