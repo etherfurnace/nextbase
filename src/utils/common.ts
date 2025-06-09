@@ -1,5 +1,6 @@
-import { MetricItem, ListItem } from "@/types";
+import { MetricItem, ListItem, ColumnItem } from "@/types";
 import { useLocalizedTime } from "@/hooks/useLocalizedTime";
+import dayjs from "dayjs";
 
 // 判断一个字符串是否是字符串的数组
 export const isStringArray = (input: string): boolean => {
@@ -26,7 +27,7 @@ export const getEnumValue = (metric: MetricItem, id: number | string) => {
       JSON.parse(input).find((item: ListItem) => item.id === id)?.name || id
     );
   }
-  return isNaN(+id) 
+  return isNaN(+id)
     ? id
     : (+id).toFixed(2);
 };
@@ -91,4 +92,44 @@ export const calculateMetrics = (data: any[], key = 'value1') => {
     sumValue,
     latestValue,
   };
+};
+
+// 导出文件为csv
+export const exportToCSV = (data: any[], columns: ColumnItem[], filename = 'export.csv') => {
+  // 1. 生成表头
+  const headers = columns.map(col => col.dataIndex).join(',');
+  console.log(headers)
+  // 2. 生成数据行
+  const rows = data.map(row =>
+    columns.map(col => {
+      let value = row[col.dataIndex] || 0;
+      if (col.dataIndex === 'timestamp' && value) {
+        // 支持秒或毫秒时间戳
+        value = dayjs(
+          typeof value === 'number'
+            ? (value.toString().length === 10 ? value * 1000 : value)
+            : value
+        ).format('YYYY-MM-DD HH:mm:ss');
+      }
+      // 处理逗号、引号等特殊字符
+      if (typeof value === 'string' && (value.includes(',') || value.includes('"'))) {
+        return `"${value.replace(/"/g, '""')}"`;
+      }
+      return value ?? '';
+    }).join(',')
+  );
+  // 3. 合并为完整 CSV 字符串
+  const csvContent = [headers, ...rows].join('\n');
+
+  // 4. 创建 Blob 并下载
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  return blob;
+  // const url = URL.createObjectURL(blob);
+  // const a = document.createElement('a');
+  // a.href = url;
+  // a.download = filename;
+  // document.body.appendChild(a);
+  // a.click();
+  // document.body.removeChild(a);
+  // URL.revokeObjectURL(url);
 };

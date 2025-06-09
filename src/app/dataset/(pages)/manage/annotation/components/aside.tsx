@@ -38,7 +38,15 @@ const Aside = ({ children, menuItems, loading }: { children: any, menuItems: any
             <ul className="p-3">
               {menuItems.map((item: any) => (
                 <li key={item.id} className={`rounded-md mb-1 ${isActive(item.id) ? sideMenuStyle.active : ''}`}>
-                  <Link href={buildUrlWithParams(item.id)} className={`group flex items-center overflow-hidden h-9 rounded-md py-2 text-sm font-normal px-3`}>
+                  <Link href={buildUrlWithParams(item.id)} className={`group flex items-center overflow-hidden h-9 rounded-md py-2 text-sm font-normal px-3`}
+                    onClick={async (e) => {
+                      e.preventDefault();
+                      const shouldSave = window.confirm('请确认数据已保存，是否继续？');
+                      if (shouldSave) {
+                        router.push(buildUrlWithParams(item.id))
+                      }
+                    }}
+                  >
                     {<Icon type={'caijiqi'} className="text-xl pr-1.5" />}
                     <EllipsisWithTooltip
                       text={item.name}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Empty, Tooltip as Tip } from 'antd';
 import {
   XAxis,
@@ -60,7 +60,7 @@ const getDetails = (arr: ChartData[]): Record<string, any> => {
 };
 
 const LineChart: React.FC<LineChartProps> = ({
-  data,
+  data = [],
   unit = '',
   showDimensionFilter = false,
   metric = {},
@@ -80,18 +80,33 @@ const LineChart: React.FC<LineChartProps> = ({
   const [details, setDetails] = useState<Record<string, any>>({});
   const [hasDimension, setHasDimension] = useState<boolean>(false);
   const [boxItems, setBoxItems] = useState<TableDataItem[]>([]);
+  const [timeline, setTimeline] = useState<any>({
+    startIndex: 0,
+    endIndex: 0
+  });
   // 获取数据中的最小和最大时间
-  const times = data.map((d) => d.timestamp);
-  const minTime = +new Date(Math.min(...times));
-  const maxTime = +new Date(Math.max(...times));
-  const afterData = data.slice(0, 500);
-  const startIndex = 0;
-  const endIndex = Math.floor(data.length / 10)
+  const [minTime, maxTime] = useMemo(() => {
+    if (!data.length) return [0, 0];
+    const times = data.map(d => +new Date(d.timestamp));
+    return [Math.min(...times), Math.max(...times)];
+  }, [data]);
+
+  const visibleData = useMemo(() => {
+    if (!Array.isArray(data) || !data.length) return [];
+    const start = Math.max(0, Math.min(timeline.startIndex, data.length - 1));
+    const end = Math.max(start + 1, Math.min(timeline.endIndex, data.length));
+    return data.slice(start, end);
+  }, [data, timeline]);
+
 
   useEffect(() => {
     const chartKeys = getChartAreaKeys(data);
     const chartDetails = getDetails(data);
     if (data.length) getEvent();
+    setTimeline({
+      startIndex: 0,
+      endIndex: Math.floor(data.length / 10)
+    })
     setHasDimension(
       !Object.values(chartDetails || {}).every((item) => !item.length)
     );
@@ -257,6 +272,42 @@ const LineChart: React.FC<LineChartProps> = ({
     return Math.floor(new Date(time).getTime() / 1000);
   };
 
+  const indexChange = (value: any) => {
+    setTimeline(value);
+  };
+
+  // const onClick = (data: any) => {
+  //   console.log(isBrushing);
+  //   if (isBrushing) return;
+  //   if(onLineClick) onLineClick(data);
+  // };
+
+  const renderDot = (props: any) => {
+    const { cx, cy, payload, index } = props;
+    const { label } = payload;
+    // 只在 timeline 区间内渲染 dot
+    const inRange = props.index >= timeline.startIndex && props.index <= timeline.endIndex;
+    if ((label && label === 1)) {
+      return <circle key={index} cx={cx} cy={cy} r={2} fill="red" />;
+    } else {
+      return <g key={index} />;
+    }
+  };
+
+  const renderMinDot = (props: any) => {
+    const { cx, cy, payload, index } = props;
+    const { label } = payload;
+    if (label && label === 1) {
+      return (
+        <circle key={index} cx={cx} cy={cy} r={.3} fill="red" />
+      )
+    } else {
+      return (
+        <g key={index} />
+      )
+    }
+  };
+
   return (
     <div
       className={`flex w-full h-full ${showDimensionFilter || showDimensionTable ? 'flex-row' : 'flex-col'
@@ -273,7 +324,7 @@ const LineChart: React.FC<LineChartProps> = ({
                 left: 0,
                 bottom: 0,
               }}
-
+              // onClick={onClick}
               onMouseDown={handleMouseDown}
               onMouseMove={handleMouseMove}
               onMouseUp={handleMouseUp}
@@ -304,7 +355,6 @@ const LineChart: React.FC<LineChartProps> = ({
                   </ReferenceLine>
                 );
               })}
-
               <CartesianGrid strokeDasharray="3 3" vertical={false} />
               <Tooltip
                 offset={-40}
@@ -317,15 +367,16 @@ const LineChart: React.FC<LineChartProps> = ({
                 }
               />
               {getChartAreaKeys(data).map((key, index) => (
-                  <Area
-                    key={index}
-                    type="monotone"
-                    dataKey={key}
-                    stroke={'#1976d2'}
-                    fillOpacity={0}
-                    fill={colors[index]}
-                    hide={!visibleAreas.includes(key)}
-                  />
+                <Area
+                  key={index}
+                  type="monotone"
+                  dataKey={key}
+                  dot={renderDot}
+                  stroke={'#1976d2'}
+                  fillOpacity={0}
+                  fill={colors[index]}
+                  hide={!visibleAreas.includes(key)}
+                />
               ))}
               {isDragging &&
                 startX !== null &&
@@ -343,9 +394,9 @@ const LineChart: React.FC<LineChartProps> = ({
                 height={30}
                 travellerWidth={5}
                 stroke="#8884d8"
-                startIndex={startIndex}
-                endIndex={endIndex}
-
+                startIndex={timeline.startIndex}
+                endIndex={timeline.endIndex}
+                onChange={indexChange}
                 tickFormatter={(tick) => formatTime(tick, minTime, maxTime)}
               >
                 <AreaChart data={data}>
@@ -358,7 +409,7 @@ const LineChart: React.FC<LineChartProps> = ({
                       fill={'#1976d2'}
                       fillOpacity={0}
                       isAnimationActive={false}
-                      dot={false}
+                      dot={renderMinDot}
                     />
                   ))}
                 </AreaChart>
