@@ -1,16 +1,21 @@
 'use client'
 import { useSession, signOut } from 'next-auth/react';
-import React, { createContext, useContext, useEffect } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '@/utils/supabaseClient';
+import { User } from '@supabase/supabase-js';
 
 interface UserInfoContextType {
+  user: User | null,
   [key: string]: any
 }
 
-const UserInfoContext = createContext<UserInfoContextType | undefined>(undefined);
+export const UserInfoContext = createContext<UserInfoContextType>({
+  user: null
+});
 
 export const UserInfoProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { data: session } = useSession();
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     if (!session) return;
@@ -23,21 +28,26 @@ export const UserInfoProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       });
       supabase.auth.getSession().then((res) => {
         const { data, error } = res;
-        console.log(res);
         if (!data.session) {
           supabase.auth.signOut();
           signOut();
+        } else {
+          (async () => {
+            const { data, error } = await supabase.auth.getUser();
+            if (error) {
+              setUser(null);
+              return;
+            } else {
+              setUser(data.user);
+            }
+          })()
         }
-      })
-    } 
-    // else {
-    //   supabase.auth.signOut();
-    //   signOut();
-    // }
+      });
+    }
   }, [session]);
 
   return (
-    <UserInfoContext.Provider value={{ session }}>
+    <UserInfoContext.Provider value={{ session, user }}>
       {children}
     </UserInfoContext.Provider>
   );

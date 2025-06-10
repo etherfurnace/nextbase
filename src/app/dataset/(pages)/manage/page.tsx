@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import { Segmented, Modal, message } from 'antd';
 import EntityList from '@/components/entity-list';
 import { useTranslation } from '@/utils/i18n';
@@ -9,7 +9,7 @@ import { ModalRef, UserProfile } from './types';
 import '@ant-design/v5-patch-for-react-19';
 import { supabase } from '@/utils/supabaseClient';
 import { User } from '@supabase/supabase-js';
-import { useUserInfoContext } from '@/context/userInfo';
+import { UserInfoContext } from '@/context/userInfo';
 
 const { confirm } = Modal;
 import sideMenuStyle from './index.module.scss';
@@ -17,6 +17,7 @@ import sideMenuStyle from './index.module.scss';
 const DatasetManagePage = () => {
   const { t } = useTranslation();
   const router = useRouter();
+  const data = useContext(UserInfoContext);
   const [user, setUser] = useState<User | null>(null);
   const [activeTab, setActiveTab] = useState('anomaly');
   const [searchTerm, setSearchTerm] = useState('');
@@ -26,6 +27,7 @@ const DatasetManagePage = () => {
   const modalRef = useRef<ModalRef>(null);
 
   useEffect(() => {
+    console.log(data);
     if (!loading) {
       getDataSets();
     }
@@ -63,7 +65,7 @@ const DatasetManagePage = () => {
       return name || '--';
     }
     return '--';
-  }
+  };
 
   const getDataSets = async () => {
     setLoading(true);
@@ -77,7 +79,6 @@ const DatasetManagePage = () => {
         .select('id,first_name,last_name');
       setUser(currentUser.user);
       if (data?.length) {
-        console.log(currentUser);
         const _data = data.map((item) => {
           return {
             id: item.id,
@@ -91,13 +92,13 @@ const DatasetManagePage = () => {
         })
         setDatasets(_data);
       } else {
-        message.error(`${error?.code} ${error?.message}`)
+        message.error(`${error?.code} ${error?.message}`);
       }
     } else {
       setDatasets([]);
     }
     setLoading(false);
-  }
+  };
 
   const infoText = (item: any) => {
     return `Created by: ${item.creator}`;
@@ -105,12 +106,11 @@ const DatasetManagePage = () => {
 
   const navigateToNode = (item: any) => {
     router.push(
-      `/dataset/manage/detail?id=${item?.id}&name=${item.name}&tenant_id=${item.tenant_id}&user_id=${item.user_id}`
+      `/dataset/manage/detail?folder_id=${item?.id}&folder_name=${item.name}`
     );
   };
 
   const handleTabChange = (key: string) => {
-    console.log(key)
     setActiveTab(key);
     setSearchTerm('');
     setFilterValue([]);
@@ -143,12 +143,12 @@ const DatasetManagePage = () => {
   };
 
   const handleOpenModal = (type: string, title: string, form: any = {}) => {
-    modalRef.current?.showModal({ type, title, form })
+    modalRef.current?.showModal({ type, title, form });
   };
 
   return (
     <div className={`p-4`}>
-      <div className={`flex flex-col w-full h-full ${sideMenuStyle.segmented}`}>
+      <div className={`flex flex-col w-full ${sideMenuStyle.segmented}`}>
         <Segmented
           options={datasetTypes.map((type) => ({
             label: type.label,

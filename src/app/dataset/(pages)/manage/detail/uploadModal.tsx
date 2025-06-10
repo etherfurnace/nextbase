@@ -1,17 +1,19 @@
 "use client";
 import OperateModal from '@/components/operate-modal';
-import { useState, useImperativeHandle } from 'react';
+import { useState, useImperativeHandle, useContext } from 'react';
 import { useTranslation } from '@/utils/i18n';
 import { Upload, Button, message } from 'antd';
 import type { UploadProps } from 'antd'
 import { InboxOutlined } from '@ant-design/icons';
-import { useUserInfoContext } from '@/context/userInfo';
 import { supabase } from '@/utils/supabaseClient';
 import { ModalConfig } from '../types';
+import { UserInfoContext } from '@/context/userInfo';
+import { User } from '@supabase/supabase-js';
 const { Dragger } = Upload;
 
 const UploadModal = ({ ref, onSuccess }: { ref: any; onSuccess: () => void }) => {
   const { t } = useTranslation();
+  const { user } = useContext(UserInfoContext);
   const [visiable, setVisiable] = useState<boolean>(false);
   const [confirmLoading, setConfirmLoading] = useState<boolean>(false);
   const [fileList, setFileList] = useState<any>([]);
@@ -47,6 +49,8 @@ const UploadModal = ({ ref, onSuccess }: { ref: any; onSuccess: () => void }) =>
   const handleSubmit = async () => {
     setConfirmLoading(true);
     const file = fileList[0];
+    const { id, app_metadata } = user as User;
+    console.log(id, app_metadata)
     if(!file) {
       setConfirmLoading(false);
       return message.error('请上传文件');
@@ -61,8 +65,8 @@ const UploadModal = ({ ref, onSuccess }: { ref: any; onSuccess: () => void }) =>
       await supabase.from('anomaly_detection_train_data').insert([
         {
           dataset_id: formData.dataset_id,
-          tenant_id: formData.tenant_id,
-          user_id: formData.user_id,
+          tenant_id: app_metadata.tenant_id,
+          user_id: id,
           name: file.name,
           storage_path: data.path
         }

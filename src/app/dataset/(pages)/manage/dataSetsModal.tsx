@@ -93,7 +93,7 @@ const DatasetModal = ({ ref, supabase, user, options, onSuccess }: DatasetModalP
 
   const handleCancel = () => {
     setIsModalOpen(false);
-  }
+  };
 
   return (
     <>

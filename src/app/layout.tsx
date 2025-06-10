@@ -39,7 +39,7 @@ export default function RootLayout({
         <AuthProvider>
           <LocaleProvider>
             <UserInfoProvider>
-              <div className="flex flex-col">
+              <div className="flex flex-col h-full">
                 <Header /> {/* Header is now a Client Component */}
                 {children}
               </div>

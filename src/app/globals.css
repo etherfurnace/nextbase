@@ -48,7 +48,8 @@ body {
   background: var(--foreground);
   color: var(--background);
   font-family: sans-serif, Arial, Helvetica;
-  min-width: 1280px;
+  /* min-width: 1280px; */
+  height: 100vh;
   background-image: url('/system-bg.jpg');
   background-size: cover;
   background-repeat: no-repeat;

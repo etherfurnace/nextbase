@@ -91,22 +91,14 @@ const LineChart: React.FC<LineChartProps> = ({
     return [Math.min(...times), Math.max(...times)];
   }, [data]);
 
-  const visibleData = useMemo(() => {
-    if (!Array.isArray(data) || !data.length) return [];
-    const start = Math.max(0, Math.min(timeline.startIndex, data.length - 1));
-    const end = Math.max(start + 1, Math.min(timeline.endIndex, data.length));
-    return data.slice(start, end);
-  }, [data, timeline]);
-
-
   useEffect(() => {
     const chartKeys = getChartAreaKeys(data);
     const chartDetails = getDetails(data);
     if (data.length) getEvent();
     setTimeline({
       startIndex: 0,
-      endIndex: Math.floor(data.length / 10)
-    })
+      endIndex: data.length > 10 ? Math.floor(data.length / 10) : (data.length > 1 ? data.length - 1 : 0)
+    });
     setHasDimension(
       !Object.values(chartDetails || {}).every((item) => !item.length)
     );
@@ -285,10 +277,8 @@ const LineChart: React.FC<LineChartProps> = ({
   const renderDot = (props: any) => {
     const { cx, cy, payload, index } = props;
     const { label } = payload;
-    // 只在 timeline 区间内渲染 dot
-    const inRange = props.index >= timeline.startIndex && props.index <= timeline.endIndex;
     if ((label && label === 1)) {
-      return <circle key={index} cx={cx} cy={cy} r={2} fill="red" />;
+      return <circle key={index} cx={cx} cy={cy} r={1.5} fill="red" />;
     } else {
       return <g key={index} />;
     }
@@ -394,8 +384,8 @@ const LineChart: React.FC<LineChartProps> = ({
                 height={30}
                 travellerWidth={5}
                 stroke="#8884d8"
-                startIndex={timeline.startIndex}
-                endIndex={timeline.endIndex}
+                startIndex={Math.max(0, Math.min(timeline.startIndex, Math.max(0, data.length - 1)))}
+                endIndex={Math.max(0, Math.min(timeline.endIndex, Math.max(0, data.length - 1)))}
                 onChange={indexChange}
                 tickFormatter={(tick) => formatTime(tick, minTime, maxTime)}
               >

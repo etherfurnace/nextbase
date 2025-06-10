@@ -1,8 +1,6 @@
 'use client'
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { MenuItem } from '@/types';
-import { BankOutlined } from '@ant-design/icons';
 import CustomTable from '@/components/custom-table';
 import { ColumnItem } from '@/types';
 import { ModalRef } from '../types';
@@ -32,7 +30,6 @@ const Detail = () => {
   const [tableData, setTableData] = useState<TableData[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [confirmLoading, setConfirmLoading] = useState<boolean>(false);
-  const [items, setItems] = useState<MenuItem[]>([]);
   const [pagination, setPagination] = useState<TablePaginationConfig>({
     current: 1,
     total: 1,
@@ -44,16 +41,18 @@ const Detail = () => {
       title: t('common.name'),
       key: 'name',
       dataIndex: 'name',
-      width: 200,
     },
     {
       title: t('datasets.anomalyTitle'),
       key: 'anomaly',
       dataIndex: 'anomaly',
       render(_, record) {
+        const obj = JSON.parse(record?.metadata);
         return (
           <>
-            {record?.anomaly || '--'}
+            {
+              obj?.length || '--'
+            }
           </>
         )
       },
@@ -92,53 +91,57 @@ const Detail = () => {
 
   const Topsection = () => {
     const pathname = usePathname();
-    const getTitle = () => {
-      const temp = pathname.split('/')[3];
-      return '文档列表';
-    };
     return (
       <>
-        <div className={`w-[216px] rounded-md mr-4 flex h-[90px] flex-col items-center justify-center ${sideMenuStyle.sectionContainer}`}>
-
-          <div className={`flex justify-center items-center mb-2`}>
-            <Icon
-              type="shiyongwendang"
-              className="mr-2"
-              style={{ height: '22px', width: '22px', color: 'blue' }}
-            ></Icon>
-            <h1 className="text-center text-lg font-bold leading-[24px]">{'Weops'}</h1>
+        <div className="mb-4 flex w-full gap-4">
+          <div className="w-[216px] rounded-lg flex h-[90px] flex-col items-center justify-center bg-white shadow">
+            <div className="flex justify-center items-center mb-2">
+              <Icon
+                type="shiyongwendang"
+                className="mr-2"
+                style={{ height: '22px', width: '22px', color: '#1976d2' }}
+              />
+              <h1 className="text-lg font-bold leading-[24px] text-gray-800">Weops</h1>
+            </div>
+            <p className="text-xs text-gray-500">这是知识库的...</p>
           </div>
-          <p>这是知识库的...</p>
-        </div>
-        <div className={`flex flex-col w-full h-[90px] p-4 rounded-md overflow-hidden ${sideMenuStyle.sectionContainer}`}>
-          <h1 className="text-lg">{getTitle()}</h1>
-          <p className="text-sm overflow-hidden w-full min-w-[1000px] mt-[8px]">
-            {'支持上传时序数据，并为这些数据进行打标，以便后续进行模型训练。'}
-          </p>
+          <div className="flex-1 flex flex-col justify-center h-[90px] p-4 rounded-lg bg-white shadow">
+            <h1 className="text-lg font-bold text-gray-900 mb-1">文档列表</h1>
+            <p className="text-xs text-gray-500">
+              支持上传时序数据，并为这些数据进行打标，以便后续进行模型训练。
+            </p>
+          </div>
         </div>
       </>
     );
   };
 
+  const pagedData = useMemo(() => {
+    if (!tableData.length) return [];
+    return tableData.slice(
+      (pagination.current! - 1) * pagination.pageSize!,
+      pagination.current! * pagination.pageSize!
+    );
+  }, [tableData, pagination.current, pagination.pageSize]);
+
   useEffect(() => {
-    const items: MenuItem[] = [
-      {
-        name: 'test',
-        url: 'test',
-        title: 'test',
-        icon: 'caijiqi',
-        operation: ['null']
-      }
-    ];
     getDataset();
-    setItems(items);
   }, []);
+
+  useEffect(() => {
+    setPagination((prev) => {
+      return {
+        ...prev,
+        total: tableData.length
+      }
+    })
+  }, [pagedData]);
 
   const getDataset = async (search: string = '') => {
     setLoading(true);
     const { data, error } = await supabase.from('anomaly_detection_train_data')
       .select()
-      .eq('dataset_id', searchParams.get('id'))
+      .eq('dataset_id', searchParams.get('folder_id'))
       .ilike('name', `%${search}%`);
     setTableData(data as TableData[]);
     setPagination((prev) => {
@@ -156,10 +159,8 @@ const Detail = () => {
 
   const onUpload = () => {
     const data = {
-      dataset_id: searchParams.get('id'),
-      tenant_id: searchParams.get('tenant_id'),
-      folder: searchParams.get('name'),
-      user_id: searchParams.get('user_id')
+      dataset_id: searchParams.get('folder_id'),
+      folder: searchParams.get('folder_name'),
     };
     modalRef.current?.showModal({ type: 'edit', form: data });
   };
@@ -176,12 +177,9 @@ const Detail = () => {
   };
 
   const toAnnotation = (data: any) => {
-    router.push(`/dataset/manage/annotation?id=${data.id}`);
-  };
-
-  const back = () => {
-    console.log(back)
-    router.back();
+    const folder_id = searchParams.get('folder_id');
+    const folder_name = searchParams.get('folder_name');
+    router.push(`/dataset/manage/annotation?id=${data.id}&folder_id=${folder_id}&folder_name=${folder_name}`);
   };
 
   const handleChange = (value: any) => {
@@ -193,33 +191,37 @@ const Detail = () => {
       <div className={`flex w-full h-full text-sm p-[20px] ${sideMenuStyle.sideMenuLayout} grow`}>
         <div className="w-full flex grow flex-1 h-full">
           <section className="flex-1 flex flex-col overflow-hidden">
-            <div className={`mb-4 flex w-full rounded-md`}>
+            <div className={`flex w-full rounded-md`}>
               <Topsection />
             </div>
-            <div className={`p-4 flex-1 rounded-md overflow-hidden ${sideMenuStyle.sectionContainer} ${sideMenuStyle.sectionContext}`}>
-              <div className="flex justify-end">
-                <div className='mr-1.5'>
-                  <Search
-                    className="w-[240px]"
-                    placeholder={t('common.search')}
-                    enterButton
-                    onSearch={onSearch}
-                  />
-                </div>
-                <Button type="primary" onClick={onUpload}>{t("datasets.upload")}</Button>
-              </div>
-              <div className="flex-1 relative">
+            <div className={`p-4 flex-1 rounded-lg bg-white shadow overflow-hidden flex flex-col`}>
+              <div className="flex justify-between items-center mb-4 gap-2">
                 <button
-                  className="absolute bottom-1 left-4 flex items-center py-2 rounded-md text-sm z-999 cursor-pointer"
+                  className="flex items-center py-2 px-4 rounded-md text-sm font-medium text-gray-600 cursor-pointer hover:text-blue-600"
                   onClick={() => router.back()}
                 >
                   <ArrowLeftOutlined className="mr-2" />
+                  返回
                 </button>
+                <div className='flex'>
+                  <Search
+                    className="w-[240px] mr-1.5"
+                    placeholder={t('common.search')}
+                    enterButton
+                    onSearch={onSearch}
+                    style={{ fontSize: 15 }}
+                  />
+                  <Button type="primary" className="rounded-md text-xs shadow" onClick={onUpload}>
+                    {t("datasets.upload")}
+                  </Button>
+                </div>
+              </div>
+              <div className="flex-1 relative">
                 <CustomTable
                   rowKey="id"
-                  className="mt-3 absolute w-[100%]"
-                  scroll={{ x: 'calc(100vw - 400px)', y: 'calc(100vh - 400px)' }}
-                  dataSource={tableData}
+                  className="mt-3"
+                  scroll={{ x: '100%', y: 'calc(100vh - 420px)' }}
+                  dataSource={pagedData}
                   columns={columns}
                   pagination={pagination}
                   loading={loading}

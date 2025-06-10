@@ -54,8 +54,8 @@ const AnnotationPage = () => {
     };
     return (
       <div className="flex flex-col h-[90px] p-4 overflow-hidden">
-        <h1 className="text-sm">{getTitle()}</h1>
-        <p className="text-sm overflow-hidden w-full min-w-[1000px] mt-[8px]">
+        <h1 className="text-lg font-bold text-gray-900 mb-1">{getTitle()}</h1>
+        <p className="text-xs overflow-hidden w-full min-w-[1000px] text-gray-500 mt-[8px]">
           {'支持上传时序数据，并为这些数据进行打标，以便后续进行模型训练。'}
         </p>
       </div>
@@ -215,7 +215,6 @@ const AnnotationPage = () => {
       const _tableData = newData.filter((item: any) => item.label === 1);
       setTableData(_tableData);
       setCurrentFileData(newData);
-      console.log(newData)
     } finally {
       setChartLoading(false);
     }
@@ -264,6 +263,11 @@ const AnnotationPage = () => {
           console.log(updateFile.error);
           return;
         }
+        const updateRowData = await supabase.from('anomaly_detection_train_data').update({
+          metadata: JSON.stringify({
+            length: tableData.length
+          })
+        }).eq('id', file_id);
         message.success('保存成功');
         getCurrentFileData();
       } else {
@@ -292,13 +296,13 @@ const AnnotationPage = () => {
             <Topsection />
           </div>
           <div className={`p-4 flex-1 rounded-md overflow-auto ${sideMenuStyle.sectionContainer} ${sideMenuStyle.sectionContext}`}>
-            <div className="flex justify-end">
+            <div className="flex justify-end gap-2 mb-4">
               <Button className="mr-4" onClick={handleCancel}>取消</Button>
               <Button type="primary" loading={saveLoading} onClick={handleSava}>保存</Button>
             </div>
             <Spin className="w-full" spinning={chartLoading}>
               <div className="flex justify-between">
-                <div className="w-[60%]" style={{ height: `calc(100vh - 280px)` }}>
+                <div className="w-[60%]" style={{ height: `calc(100vh - 260px)` }}>
                   <LineChart
                     data={currentFileData}
                     showDimensionTable
@@ -307,11 +311,11 @@ const AnnotationPage = () => {
                   // onLineClick={onLineClick}
                   />
                 </div>
-                <div className="w-[38%]" style={{ height: `calc(100vh - 280px)` }}>
+                <div className="w-[38%]" style={{ height: `calc(100vh - 300px)` }}>
                   <CustomTable
                     size="small"
                     rowKey="timestamp"
-                    scroll={{ y: 'calc(100vh - 380px)' }}
+                    scroll={{ y: 'calc(100vh - 396px)' }}
                     columns={colmuns}
                     dataSource={pagedData}
                     loading={tableLoading}
