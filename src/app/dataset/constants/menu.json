@@ -5,6 +5,12 @@
       "icon": "UserOutlined",
       "url": "/dataset/manage",
       "name": "example"
+    },
+    {
+      "title": "训练任务",
+      "icon": "UserOutlined",
+      "url": "/dataset/task",
+      "name": "example"
     }
   ],
   "en": [
@@ -12,6 +18,12 @@
       "title": "DataSet",
       "icon": "UserOutlined",
       "url": "/dataset/manage",
+      "name": "example"
+    },
+    {
+      "title": "TrainTask",
+      "icon": "UserOutlined",
+      "url": "/dataset/task",
       "name": "example"
     }
   ]

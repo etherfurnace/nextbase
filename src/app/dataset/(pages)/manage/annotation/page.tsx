@@ -142,31 +142,32 @@ const AnnotationPage = () => {
   // }, [pagination?.current, pagination?.pageSize, tableData])
 
   const fileReader = (text: string) => {
-    const lines = text.trim().split('\n');
+    // 统一换行符为 \n
+    const lines = text.replace(/\r\n|\r|\n/g, '\n').split('\n').filter(line => line.trim() !== '');
     const headers = lines[0].split(',');
     const data = lines.slice(1).map(line => {
       const values = line.split(',');
       return headers.reduce((obj: Record<string, any>, key, idx) => {
-        obj[key] = key === 'timestamp' ? new Date(values[idx]).getTime() / 1000 : Number(values[idx]);
+        obj[key] = key === 'timestamp'
+          ? new Date(values[idx]).getTime() / 1000
+          : Number(values[idx]);
         return obj;
       }, {});
     });
     if (headers.includes('label')) {
       const _data = data.filter((item) => item.label === 1);
       setTableData(_data);
-      setPagination((prev) => {
-        return {
-          ...prev,
-          total: _data.length
-        }
-      })
+      setPagination((prev) => ({
+        ...prev,
+        total: _data.length
+      }));
     } else {
       setTableData([]);
       setPagination({
         current: 1,
         total: 0,
         pageSize: 20
-      })
+      });
     }
     return data;
   }
@@ -324,7 +325,6 @@ const AnnotationPage = () => {
                   />
                 </div>
               </div>
-
             </Spin>
           </div>
         </section>
