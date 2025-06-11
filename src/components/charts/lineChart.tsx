@@ -35,10 +35,13 @@ interface LineChartProps {
   metric?: MetricItem;
   threshold?: ThresholdField[];
   formID?: number;
+  timeline?: any;
   showDimensionFilter?: boolean;
   showDimensionTable?: boolean;
   allowSelect?: boolean;
   onXRangeChange?: (arr: [Dayjs, Dayjs]) => void;
+  onAnnotationClick?: (value: any) => void;
+  onTimeLineChange?: (value: any) => void;
 }
 
 const getChartAreaKeys = (arr: ChartData[]): string[] => {
@@ -66,9 +69,15 @@ const LineChart: React.FC<LineChartProps> = ({
   metric = {},
   threshold = [],
   formID = null,
+  timeline = {
+    startIndex: 0,
+    endIndex: 0
+  },
   allowSelect = true,
   showDimensionTable = false,
   onXRangeChange,
+  onTimeLineChange = () => { },
+  onAnnotationClick = () => { },
 }) => {
   const { formatTime } = useFormatTime();
   // const { get } = useApiClient();
@@ -80,10 +89,10 @@ const LineChart: React.FC<LineChartProps> = ({
   const [details, setDetails] = useState<Record<string, any>>({});
   const [hasDimension, setHasDimension] = useState<boolean>(false);
   const [boxItems, setBoxItems] = useState<TableDataItem[]>([]);
-  const [timeline, setTimeline] = useState<any>({
-    startIndex: 0,
-    endIndex: 0
-  });
+  // const [timeline, setTimeline] = useState<any>({
+  //   startIndex: 0,
+  //   endIndex: 0
+  // });
   // 获取数据中的最小和最大时间
   const [minTime, maxTime] = useMemo(() => {
     if (!data.length) return [0, 0];
@@ -95,10 +104,10 @@ const LineChart: React.FC<LineChartProps> = ({
     const chartKeys = getChartAreaKeys(data);
     const chartDetails = getDetails(data);
     if (data.length) getEvent();
-    setTimeline({
-      startIndex: 0,
-      endIndex: data.length > 10 ? Math.floor(data.length / 10) : (data.length > 1 ? data.length - 1 : 0)
-    });
+    // setTimeline({
+    //   startIndex: 0,
+    //   endIndex: data.length > 10 ? Math.floor(data.length / 10) : (data.length > 1 ? data.length - 1 : 0)
+    // });
     setHasDimension(
       !Object.values(chartDetails || {}).every((item) => !item.length)
     );
@@ -265,14 +274,15 @@ const LineChart: React.FC<LineChartProps> = ({
   };
 
   const indexChange = (value: any) => {
-    setTimeline(value);
+    onTimeLineChange(value);
   };
 
-  // const onClick = (data: any) => {
-  //   console.log(isBrushing);
-  //   if (isBrushing) return;
-  //   if(onLineClick) onLineClick(data);
-  // };
+  const onClick = (data: any) => {
+    if(!data) return [];
+    const { activePayload } = data;
+    const arr = activePayload?.map((item: any) => item?.payload)
+    onAnnotationClick(arr);
+  };
 
   const renderDot = (props: any) => {
     const { cx, cy, payload, index } = props;
@@ -314,7 +324,7 @@ const LineChart: React.FC<LineChartProps> = ({
                 left: 0,
                 bottom: 0,
               }}
-              // onClick={onClick}
+              onClick={onClick}
               onMouseDown={handleMouseDown}
               onMouseMove={handleMouseMove}
               onMouseUp={handleMouseUp}
@@ -347,7 +357,7 @@ const LineChart: React.FC<LineChartProps> = ({
               })}
               <CartesianGrid strokeDasharray="3 3" vertical={false} />
               <Tooltip
-                offset={-40}
+                offset={-80}
                 content={
                   <CustomTooltip
                     unit={unit}

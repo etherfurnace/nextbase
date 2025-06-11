@@ -45,7 +45,7 @@ const Aside = ({ children, menuItems, loading }: { children: any, menuItems: any
               <Spin spinning={loading}></Spin>
             </div>
           ) : (
-            <ul className="p-3">
+            <ul className="p-3 overflow-auto max-h-[65vh]">
               {menuItems.map((item: any) => (
                 <li
                   key={item.id}

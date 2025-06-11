@@ -12,6 +12,7 @@ import { useLocalizedTime } from "@/hooks/useLocalizedTime";
 import { Button, message, Spin, TablePaginationConfig } from "antd";
 import { exportToCSV } from "@/utils/common";
 import '@ant-design/v5-patch-for-react-19';
+import { cloneDeep } from "lodash";
 
 const AnnotationPage = () => {
   const searchParams = useSearchParams();
@@ -26,10 +27,15 @@ const AnnotationPage = () => {
   const [chartLoading, setChartLoading] = useState<boolean>(false);
   const [tableLoading, setTableLoading] = useState<boolean>(false);
   const [saveLoading, setSaveLoading] = useState<boolean>(false);
+  const [flag, setFlag] = useState<boolean>(false);
   const [pagination, setPagination] = useState<TablePaginationConfig>({
     current: 1,
     total: 0,
     pageSize: 20,
+  });
+  const [timeline, setTimeline] = useState<any>({
+    startIndex: 0,
+    endIndex: 0,
   });
 
   const AnnotationIntro = () => {
@@ -82,14 +88,15 @@ const AnnotationPage = () => {
       render: (_, record) => {
         const value = Number(record.value).toFixed(2);
         return <p>{value}</p>
-      }
+      },
     },
     {
       title: '标注结果',
       key: 'label',
       dataIndex: 'label',
       width: 100,
-      align: 'center'
+      align: 'center',
+      hidden: true
     },
     {
       title: '操作',
@@ -124,26 +131,29 @@ const AnnotationPage = () => {
         ...prev,
         total: tableData.length
       }
-    })
-  }, [pagedData])
+    });
+  }, [tableData]);
 
-  // useEffect(() => {
-  //   setTableLoading(true);
-  //   if (tableData.length) {
-  //     const _pageData = tableData.slice(
-  //       (pagination.current! - 1) * pagination.pageSize!,
-  //       pagination.current! * pagination.pageSize!
-  //     );
-  //     setPageData(_pageData);
-  //   } else {
-  //     setPageData([]);
-  //   }
-  //   setTableLoading(false);
-  // }, [pagination?.current, pagination?.pageSize, tableData])
+  useEffect(() => {
+    if (currentFileData.length) {
+      if (flag) {
+        setFlag(false);
+        return;
+      }
+      setTimeline({
+        startIndex: 0,
+        endIndex: currentFileData.length > 10 ? Math.floor(currentFileData.length / 10) : (currentFileData.length > 1 ? currentFileData.length - 1 : 0)
+      });
+    }
+  }, [currentFileData]);
 
   const fileReader = (text: string) => {
     // 统一换行符为 \n
-    const lines = text.replace(/\r\n|\r|\n/g, '\n').split('\n').filter(line => line.trim() !== '');
+    const lines = text.replace(/\r\n|\r|\n/g, '\n')?.split('\n').filter(line => line.trim() !== '');
+    if (!lines.length) {
+      setTableData([]);
+      return [];
+    }
     const headers = lines[0].split(',');
     const data = lines.slice(1).map(line => {
       const values = line.split(',');
@@ -192,6 +202,8 @@ const AnnotationPage = () => {
   };
 
   const onXRangeChange = (data: any[]) => {
+    console.log('test')
+    setFlag(true);
     setChartLoading(true);
     if (!currentFileData.length) {
       setChartLoading(false);
@@ -221,6 +233,27 @@ const AnnotationPage = () => {
     }
   };
 
+  const onAnnotationClick = (value: any[]) => {
+    if(!value) return;
+    setFlag(true);
+    setChartLoading(true);
+    try {
+      const _data: any[] = cloneDeep(currentFileData);
+      value.map((item: any) => {
+        const index = _data.findIndex((k) => k.timestamp === item.timestamp);
+        _data.splice(index, 1, {
+          ...item,
+          label: 1
+        })
+      });
+      const _tableData = _data.filter((item: any) => item.label === 1);
+      setTableData(_tableData);
+      setCurrentFileData(_data);
+    } finally {
+      setChartLoading(false);
+    }
+  };
+
   const handleChange = (value: any) => {
     setPagination((prev) => {
       return {
@@ -232,6 +265,7 @@ const AnnotationPage = () => {
   };
 
   const handleDelete = (record: any) => {
+    setFlag(true);
     setChartLoading(true);
     setTableLoading(true);
     try {
@@ -283,6 +317,10 @@ const AnnotationPage = () => {
     getCurrentFileData();
   };
 
+  const onTimeLineChange = (value: any) => {
+    setTimeline(value);
+  }
+
   return (
     <div className={`flex w-full h-full text-sm p-[10px] ${sideMenuStyle.sideMenuLayout} grow`}>
       <div className="w-full flex grow flex-1 h-full">
@@ -303,20 +341,23 @@ const AnnotationPage = () => {
             </div>
             <Spin className="w-full" spinning={chartLoading}>
               <div className="flex justify-between">
-                <div className="w-[60%]" style={{ height: `calc(100vh - 260px)` }}>
+                <div className="w-[58%]" style={{ height: `calc(100vh - 260px)` }}>
                   <LineChart
                     data={currentFileData}
+                    timeline={timeline}
                     showDimensionTable
                     showDimensionFilter
                     onXRangeChange={onXRangeChange}
-                  // onLineClick={onLineClick}
+                    onTimeLineChange={onTimeLineChange}
+                    onAnnotationClick={onAnnotationClick}
                   />
                 </div>
-                <div className="w-[38%]" style={{ height: `calc(100vh - 300px)` }}>
+                <div className="w-[40%]" style={{ height: `calc(100vh - 260px)` }}>
                   <CustomTable
                     size="small"
                     rowKey="timestamp"
-                    scroll={{ y: 'calc(100vh - 396px)' }}
+                    scroll={{ y: 'calc(100vh - 330px)' }}
+                    pageStyle="absolute left-0 flex justify-end mt-[5px]"
                     columns={colmuns}
                     dataSource={pagedData}
                     loading={tableLoading}

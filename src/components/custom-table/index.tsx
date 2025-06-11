@@ -13,6 +13,7 @@ interface CustomTableProps<T>
   extends Omit<TableProps<T>, 'bordered' | 'fieldSetting' | 'onSelectFields'> {
   bordered?: boolean;
   size?: 'small' | 'middle' | 'large';
+  pageStyle?: string;
   fieldSetting?: {
     showSetting: boolean;
     displayFieldKeys: string[];
@@ -44,6 +45,7 @@ const CustomTable = <T extends object>({
   loading,
   scroll,
   pagination,
+  pageStyle,
   onChange,
   rowDraggable = false,
   onRowDragEnd,
@@ -233,7 +235,7 @@ const CustomTable = <T extends object>({
   return (
     <div
       className={`relative ${customTableStyle.customTable}`}
-      style={{ height: tableHeight ? `${tableHeight}px` : 'auto' }}>
+      style={{ height: tableHeight && !pageStyle ? `${tableHeight}px` : 'auto' }}>
       <Table
         size={size}
         bordered={bordered}
@@ -250,16 +252,18 @@ const CustomTable = <T extends object>({
           handleTableChange(filters, sorter, extra)
         }
       />
-      {pagination && !loading && !!pagination.total && (<div className="absolute right-0 bottom-0 flex justify-end">
-        <Pagination
-          size='small'
-          total={pagination?.total}
-          showSizeChanger
-          current={pagination?.current}
-          pageSize={pagination?.pageSize}
-          onChange={handlePageChange}
-        />
-      </div>)}
+      {pagination && !loading && !!pagination.total && (
+        <div className={pageStyle ? pageStyle : "absolute right-0 bottom-0 flex justify-end"}>
+          <Pagination
+            size='small'
+            total={pagination?.total}
+            showSizeChanger
+            current={pagination?.current}
+            pageSize={pagination?.pageSize}
+            onChange={handlePageChange}
+          />
+        </div>
+      )}
       {fieldSetting.showSetting ? (
         <SettingFilled
           style={{ top: size === 'small' ? 12 : size === 'middle' ? 16 : 20 }}
