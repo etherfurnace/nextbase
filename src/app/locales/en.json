@@ -20,7 +20,8 @@
     "selected": "Selected",
     "fieldSetting": "List field settings",
     "item": "items",
-    "clear": "Clear"
+    "clear": "Clear",
+    "type": "Type"
   },
   "datasets": {
     "addform": "New datasets added",
@@ -38,5 +39,9 @@
     "uploadText": "Drag a file or folder here to upload",
     "deleteTitle": "Delete file",
     "deleteContent": "Are you sure you want to delete this file?"
+  },
+  "traintask": {
+    "traindata": "Training data",
+    "algorithms": "Training algorithms"
   }
 }
