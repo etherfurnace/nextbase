@@ -14,17 +14,5 @@
     "inputMsg": "Please enter",
     "selectMsg": "Please select",
     "successfullyDeleted": "Delete successful!"
-  },
-  "datasets": {
-    "addform": "New datasets added",
-    "description": "Description",
-    "editform": "Editing the dataset",
-    "type": "Type",
-    "delDataset": "Deleting a dataset",
-    "delDatasetInfo": "Confirm deletion of dataset?",
-    "anomaly": "Single Indicator Anomaly Detection",
-    "forecast": "Time Series Forecasting",
-    "log": "Log",
-    "uploadSuccess": "Upload Successful"
   }
 }
