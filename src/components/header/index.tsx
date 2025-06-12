@@ -1,16 +1,19 @@
 "use client";
-
+import { Dropdown, Space, Avatar, Menu, MenuProps, message } from 'antd';
 import { useSession, signOut } from "next-auth/react";
-import { createClient } from "@supabase/supabase-js";
+// import { createClient } from "@supabase/supabase-js";
 import { useTranslation } from "@/utils/i18n";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import * as Icons from "@ant-design/icons";
+import Icon from '../icon';
+import { supabase } from "@/utils/supabaseClient";
+import { DownOutlined } from '@ant-design/icons';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+// const supabase = createClient(
+//   process.env.NEXT_PUBLIC_SUPABASE_URL!,
+//   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+// );
 
 interface MenuItem {
   url: string;
@@ -23,6 +26,7 @@ export default function Header() {
   const { t } = useTranslation();
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const pathname = usePathname();
+  const [dropdownVisible, setDropdownVisible] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchMenu = async () => {
@@ -39,8 +43,9 @@ export default function Header() {
   }, []);
 
   const handleLogout = async () => {
+    console.log('sign out!')
     await supabase.auth.signOut();
-    signOut(); 
+    signOut();
   };
 
   const renderIcon = (iconName: string) => {
@@ -48,22 +53,34 @@ export default function Header() {
     return IconComponent ? <IconComponent /> : null;
   };
 
+  const handleMenuClick = ({ key }: any) => {
+    console.log(key)
+    if (key === 'logout') handleLogout();
+    setDropdownVisible(false);
+  };
+
+  const items: MenuProps['items'] = [
+    {
+      key: 'logout',
+      label: (<button>{t('common.logout')}</button>)
+    }
+  ]
+
   return (
     <header className="fixed top-0 left-0 w-full flex justify-between items-center px-4 py-2 shadow-xs z-10">
       <div className="flex items-center gap-2">
         <img src="/logo.png" alt="App Logo" className="h-8 w-8" />
-        <span className="text-lg font-bold">NextBase</span>
+        <span className="text-lg font-bold text-black">NextBase</span>
       </div>
       <nav className="flex gap-4 items-center">
         {menuItems.map((item) => (
           <a
             key={item.url}
             href={item.url}
-            className={`flex items-center gap-2 text-sm ${
-              pathname === item.url ? "text-blue-500 font-bold" : "text-gray-700 hover:text-blue-500"
-            }`}
+            className={`flex items-center gap-2 text-sm ${pathname.includes(item.url) ? "text-blue-500 font-bold" : "text-gray-700 hover:text-blue-500"
+              }`}
           >
-            {renderIcon(item.icon)}
+            <Icon type={item.icon} className="w-4 h-4" />
             <span>{item.title}</span>
           </a>
         ))}
@@ -71,22 +88,29 @@ export default function Header() {
       <div>
         {session?.user ? (
           <div className="flex items-center gap-2">
-            <div className="flex items-center">
-              <div className="h-5 w-5 flex items-center justify-center rounded-full bg-blue-500 text-white mr-1">
-                {session.user.email.charAt(0).toUpperCase()}
-              </div>
-              <span className="text-sm">{session.user.email}</span>
-            </div>
-            <button
-              onClick={handleLogout}
-              className="text-sm px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+            <Dropdown
+              menu={{
+                items,
+                onClick: handleMenuClick
+               }}
+              trigger={['click']}
+              open={dropdownVisible}
+              onOpenChange={setDropdownVisible}
             >
-              {t('common.logout')}
-            </button>
+              <a className='cursor-pointer' onClick={(e) => e.preventDefault()}>
+                <div className="flex items-center">
+                  <div className="h-5 w-5 flex items-center justify-center rounded-full bg-blue-500 text-white mr-1">
+                    {session.user.email.charAt(0).toUpperCase()}
+                  </div>
+                  <span className="text-sm text-gray-950 mr-1">{session.user.email}</span>
+                  <DownOutlined style={{ fontSize: '10px', color: 'black' }} />
+                </div>
+              </a>
+            </Dropdown>
           </div>
         ) : (
           <button
-            onClick={() => window.location.href = "/api/auth/signin"}
+            onClick={() => window.location.href = "/api/auth/signin?csrf=true"}
             className="text-sm px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
           >
             {t('common.login')}

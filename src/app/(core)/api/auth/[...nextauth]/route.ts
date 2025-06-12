@@ -1,14 +1,6 @@
 import NextAuth, { AuthOptions } from 'next-auth';
+import { supabase } from '@/utils/supabaseClient';
 import CredentialsProvider from 'next-auth/providers/credentials';
-// import GoogleProvider from 'next-auth/providers/google';
-import { createClient } from '@supabase/supabase-js';
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-if (!supabaseUrl || !supabaseKey) {
-  throw new Error('Supabase URL or Key is not defined in environment variables.');
-}
-const supabase = createClient(supabaseUrl, supabaseKey);
 
 const authOptions: AuthOptions = {
   providers: [
@@ -30,14 +22,23 @@ const authOptions: AuthOptions = {
             email: credentials.email,
             password: credentials.password
           });
-
           if (error) {
             console.error('Supabase sign in error:', error);
             throw new Error(error.message);
           }
 
           console.log('Sign in successful. User data:', data.user);
-          return data.user as { id: string; email: string } | null;
+          return {
+            id: data.user.id,
+            email: data.user.email,
+            access_token: data?.session.access_token,
+            refresh_token: data?.session.refresh_token
+          } as {
+            id: string;
+            email: string;
+            access_token: string;
+            refresh_token: string;
+          } | null;
         } catch (error) {
           console.error('Authorize function error:', error);
           throw error;
@@ -58,15 +59,21 @@ const authOptions: AuthOptions = {
       if (user) {
         token.id = user.id;
         token.email = user.email;
+        token.access_token = user.access_token;
+        token.refresh_token = user.refresh_token;
       }
       return token;
     },
     async session({ session, token }) {
       session.user.id = token.id;
       session.user.email = token.email;
+      session.supabase = {
+        access_token: token.access_token as string,
+        refresh_token: token.refresh_token as string,
+      };
       return session;
     },
-    async redirect({ url, baseUrl }) {
+    async redirect({ baseUrl }) {
       return baseUrl + '/';
     }
   }

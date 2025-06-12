@@ -6,6 +6,7 @@
     "search": "Search",
     "noData": "No data",
     "addNew": "Add New",
+    "addSuccess": "Add successfully",
     "edit": "Edit",
     "delete": "Delete",
     "confirm": "Confirm",
@@ -14,7 +15,13 @@
     "inputMsg": "Please enter",
     "selectMsg": "Please select",
     "successfullyDeleted": "Delete successful!",
-    "action": "Action"
+    "action": "Action",
+    "selectAll": "SELECT All",
+    "selected": "Selected",
+    "fieldSetting": "List field settings",
+    "item": "items",
+    "clear": "Clear",
+    "type": "Type"
   },
   "datasets": {
     "addform": "New datasets added",
@@ -26,7 +33,6 @@
     "anomaly": "Single Indicator Anomaly Detection",
     "forecast": "Time Series Forecasting",
     "log": "Log",
-    "uploadSuccess": "Upload Successful",
     "anomalyTitle": "Anomaly",
     "annotate": "Annotate",
     "upload": "Upload",

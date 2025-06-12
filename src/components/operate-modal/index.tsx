@@ -1,5 +1,6 @@
 import React from "react";
 import { Modal, ModalProps } from "antd";
+import customModalStyle from "./index.module.scss";
 
 interface CustomModalProps
   extends Omit<ModalProps, "title" | "footer" | "centered" | "subTitle"> {
@@ -19,12 +20,12 @@ const OperateModal: React.FC<CustomModalProps> = ({
   return (
     <Modal
       styles={{ body: { overflowY: 'auto', maxHeight: 'calc(80vh - 108px)' } }}
-      className="bg-white rounded-lg shadow-lg"
+      className={customModalStyle.customModal}
       classNames={{
-        body: "p-6 overflow-y-auto",
-        header: "bg-gray-100 font-semibold text-lg h-15 flex items-center pl-5 mb-5",
-        footer: "p-6",
-        content: "pb-5",
+        body: customModalStyle.customModalBody,
+        header: customModalStyle.customModalHeader,
+        footer: customModalStyle.customModalFooter,
+        content: customModalStyle.customModalContent,
       }}
       title={
         <>
