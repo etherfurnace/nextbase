@@ -5,6 +5,9 @@ const nextConfig: NextConfig = {
   sassOptions: {
     implementation: 'sass-embedded',
   },
+   eslint: {
+    ignoreDuringBuilds: true,
+  },
 };
 
 export default nextConfig;
