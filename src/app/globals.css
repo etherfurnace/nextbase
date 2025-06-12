@@ -5,6 +5,10 @@
   --foreground: #171717;
 }
 
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-fill-4) var(--color-bg-7);
+}
 
 *::-webkit-scrollbar {
   width: 6px;
@@ -43,8 +47,9 @@
 body {
   background: var(--foreground);
   color: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-  min-width: 1280px;
+  font-family: sans-serif, Arial, Helvetica;
+  /* min-width: 1280px; */
+  height: 100vh;
   background-image: url('/system-bg.jpg');
   background-size: cover;
   background-repeat: no-repeat;
@@ -60,4 +65,20 @@ body {
   vertical-align: -0.15em;
   fill: currentColor !important;
   overflow: hidden;
+}
+
+.ant-popconfirm-buttons, .ant-modal-confirm-btns  {
+    display: flex;
+    flex-direction: row-reverse;
+}
+
+.ant-modal-confirm-btns .ant-btn:nth-child(2) {
+  margin-right: 10px;
+}
+
+svg .recharts-brush-traveller {
+  fill: #1976d2 !important;
+  stroke: #fff !important;
+  rx: 4;
+  opacity: 0.9;
 }

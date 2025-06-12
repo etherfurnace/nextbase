@@ -1,16 +1,6 @@
 import NextAuth, { AuthOptions } from 'next-auth';
 import { supabase } from '@/utils/supabaseClient';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import { User, Session } from 'next-auth';
-// import GoogleProvider from 'next-auth/providers/google';
-// import { createClient } from '@supabase/supabase-js';
-
-// const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-// const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-// if (!supabaseUrl || !supabaseKey) {
-//   throw new Error('Supabase URL or Key is not defined in environment variables.');
-// }
-// const supabase = createClient(supabaseUrl, supabaseKey);
 
 const authOptions: AuthOptions = {
   providers: [
@@ -80,7 +70,7 @@ const authOptions: AuthOptions = {
       session.supabase = {
         access_token: token.access_token as string,
         refresh_token: token.refresh_token as string,
-      }
+      };
       return session;
     },
     async redirect({ url, baseUrl }) {

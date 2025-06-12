@@ -6,6 +6,7 @@ const EXCLUDED_DIRECTORIES = ['(core)', 'no-permission'];
 
 const getDynamicMenuItems = async (locale: string) => {
   const dirPath = path.join(process.cwd(), 'src', 'app');
+  console.log(dirPath)
   const directories = await fs.readdir(dirPath, { withFileTypes: true });
 
   let allMenuItems: any[] = [];
