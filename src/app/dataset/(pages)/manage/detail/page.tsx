@@ -97,7 +97,7 @@ const Detail = () => {
           <div className="w-[216px] rounded-lg flex h-[90px] flex-col items-center justify-center bg-white shadow">
             <div className="flex justify-center items-center mb-2">
               <Icon
-                type="shiyongwendang"
+                type="chakanshuji"
                 className="mr-2"
                 style={{ height: '22px', width: '22px', color: '#1976d2' }}
               />
