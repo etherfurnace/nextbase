@@ -1,7 +1,5 @@
-const HomePage = () => {
-  return (
-    <>
-      <h1>HomePage</h1>
-    </>
-  )
+import { redirect } from "next/navigation";
+
+export default function HomePage() {
+  redirect('/dataset/task/traintask')
 }

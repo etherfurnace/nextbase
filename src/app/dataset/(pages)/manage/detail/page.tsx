@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect, useRef, useMemo } from 'react';
+import React from 'react';
 import { useSearchParams } from 'next/navigation';
 import CustomTable from '@/components/custom-table';
 import { ColumnItem } from '@/types';
@@ -9,7 +10,7 @@ import { supabase } from '@/utils/supabaseClient';
 import '@ant-design/v5-patch-for-react-19';
 import { useTranslation } from '@/utils/i18n';
 import UploadModal from './uploadModal';
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import sideMenuStyle from './index.module.scss';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import Icon from '@/components/icon';
@@ -63,7 +64,7 @@ const Detail = () => {
       dataIndex: 'action',
       width: 200,
       fixed: 'right',
-      render: (_: unknown, record: any) => (
+      render: (_: unknown, record) => (
         <>
           <Button
             type="link"
@@ -90,14 +91,13 @@ const Detail = () => {
   ];
 
   const Topsection = () => {
-    const pathname = usePathname();
     return (
       <>
         <div className="mb-4 flex w-full gap-4">
           <div className="w-[216px] rounded-lg flex h-[90px] flex-col items-center justify-center bg-white shadow">
             <div className="flex justify-center items-center mb-2">
               <Icon
-                type="shiyongwendang"
+                type="chakanshuji"
                 className="mr-2"
                 style={{ height: '22px', width: '22px', color: '#1976d2' }}
               />
@@ -139,7 +139,7 @@ const Detail = () => {
 
   const getDataset = async (search: string = '') => {
     setLoading(true);
-    const { data, error } = await supabase.from('anomaly_detection_train_data')
+    const { data } = await supabase.from('anomaly_detection_train_data')
       .select()
       .eq('dataset_id', searchParams.get('folder_id'))
       .ilike('name', `%${search}%`);

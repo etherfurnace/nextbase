@@ -6,6 +6,7 @@ import { useTranslation } from "@/utils/i18n";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import * as Icons from "@ant-design/icons";
+import Icon from '../icon';
 import { supabase } from "@/utils/supabaseClient";
 import { DownOutlined } from '@ant-design/icons';
 
@@ -79,7 +80,7 @@ export default function Header() {
             className={`flex items-center gap-2 text-sm ${pathname.includes(item.url) ? "text-blue-500 font-bold" : "text-gray-700 hover:text-blue-500"
               }`}
           >
-            {renderIcon(item.icon)}
+            <Icon type={item.icon} className="w-4 h-4" />
             <span>{item.title}</span>
           </a>
         ))}

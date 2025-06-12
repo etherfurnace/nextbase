@@ -65,7 +65,7 @@ const Aside = ({ children, menuItems, loading }: { children: any, menuItems: any
                       }
                     }}
                   >
-                    <Icon type={'caijiqi'} className="text-xl pr-1.5" />
+                    <Icon type={'chakanshuji'} className="text-xl pr-1.5" />
                     <EllipsisWithTooltip
                       text={item.name}
                       className={`w-[100px] overflow-hidden text-ellipsis whitespace-nowrap ${isActive(item.id) ? 'font-semibold' : 'font-normal'}`}

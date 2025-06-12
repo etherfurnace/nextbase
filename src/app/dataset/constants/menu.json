@@ -2,13 +2,13 @@
   "zh": [
     {
       "title": "数据集",
-      "icon": "UserOutlined",
+      "icon": "datafull",
       "url": "/dataset/manage",
       "name": "example"
     },
     {
       "title": "训练任务",
-      "icon": "UserOutlined",
+      "icon": "xunlianrenwu",
       "url": "/dataset/task",
       "name": "example"
     }
@@ -16,13 +16,13 @@
   "en": [
     {
       "title": "DataSet",
-      "icon": "UserOutlined",
+      "icon": "datafull",
       "url": "/dataset/manage",
       "name": "example"
     },
     {
       "title": "TrainTask",
-      "icon": "UserOutlined",
+      "icon": "xunlianrenwu",
       "url": "/dataset/task",
       "name": "example"
     }

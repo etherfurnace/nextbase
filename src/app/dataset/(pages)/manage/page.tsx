@@ -84,7 +84,7 @@ const DatasetManagePage = () => {
             id: item.id,
             name: item.name,
             description: item.description || '--',
-            icon: 'caijixinxi',
+            icon: 'chakanshuji',
             creator: getName(item?.user_id, users),
             user_id: currentUser.user?.id,
             tenant_id: item.tenant_id
