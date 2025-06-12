@@ -73,7 +73,7 @@ const AnnotationPage = () => {
       title: '时间',
       key: 'timestamp',
       dataIndex: 'timestamp',
-      width: 150,
+      width: 100,
       align: 'center',
       render: (_, record) => {
         const time = new Date(record.timestamp * 1000).toISOString();
@@ -85,6 +85,7 @@ const AnnotationPage = () => {
       key: 'value',
       dataIndex: 'value',
       align: 'center',
+      width: 40,
       render: (_, record) => {
         const value = Number(record.value).toFixed(2);
         return <p>{value}</p>
@@ -103,6 +104,7 @@ const AnnotationPage = () => {
       key: 'action',
       dataIndex: 'action',
       align: 'center',
+      width: 40,
       render: (_, record) => {
         return (
           <Button color="danger" variant="link" onClick={() => handleDelete(record)}>
@@ -334,14 +336,14 @@ const AnnotationPage = () => {
           <div className={`mb-4 w-full rounded-md ${sideMenuStyle.sectionContainer}`}>
             <Topsection />
           </div>
-          <div className={`p-4 flex-1 rounded-md overflow-auto ${sideMenuStyle.sectionContainer} ${sideMenuStyle.sectionContext}`}>
+          <div className={`py-4 pr-4 flex-1 rounded-md overflow-auto ${sideMenuStyle.sectionContainer} ${sideMenuStyle.sectionContext}`}>
             <div className="flex justify-end gap-2 mb-4">
               <Button className="mr-4" onClick={handleCancel}>取消</Button>
               <Button type="primary" loading={saveLoading} onClick={handleSava}>保存</Button>
             </div>
             <Spin className="w-full" spinning={chartLoading}>
               <div className="flex justify-between">
-                <div className="w-[58%]" style={{ height: `calc(100vh - 260px)` }}>
+                <div className="w-[66%]" style={{ height: `calc(100vh - 260px)` }}>
                   <LineChart
                     data={currentFileData}
                     timeline={timeline}
@@ -352,12 +354,12 @@ const AnnotationPage = () => {
                     onAnnotationClick={onAnnotationClick}
                   />
                 </div>
-                <div className="w-[40%]" style={{ height: `calc(100vh - 260px)` }}>
+                <div className="w-[32%]" style={{ height: `calc(100vh - 260px)` }}>
                   <CustomTable
                     size="small"
                     rowKey="timestamp"
                     scroll={{ y: 'calc(100vh - 330px)' }}
-                    pageStyle="absolute left-0 flex justify-end mt-[5px]"
+                    pageStyle="absolute right-0 flex justify-end mt-[5px]"
                     columns={colmuns}
                     dataSource={pagedData}
                     loading={tableLoading}
