@@ -13,7 +13,8 @@
     "name": "Name",
     "inputMsg": "Please enter",
     "selectMsg": "Please select",
-    "successfullyDeleted": "Delete successful!"
+    "successfullyDeleted": "Delete successful!",
+    "action": "Action"
   },
   "datasets": {
     "addform": "New datasets added",

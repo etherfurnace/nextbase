@@ -13,7 +13,8 @@
     "name": "名称",
     "inputMsg": "请输入",
     "selectMsg": "请选择",
-    "successfullyDeleted": "成功删除"
+    "successfullyDeleted": "成功删除",
+    "action": "操作"
   },
   "datasets": {
     "addform": "新增数据集",
