@@ -13,7 +13,8 @@
     "name": "Name",
     "inputMsg": "Please enter",
     "selectMsg": "Please select",
-    "successfullyDeleted": "Delete successful!"
+    "successfullyDeleted": "Delete successful!",
+    "action": "Action"
   },
   "datasets": {
     "addform": "New datasets added",
@@ -25,6 +26,16 @@
     "anomaly": "Single Indicator Anomaly Detection",
     "forecast": "Time Series Forecasting",
     "log": "Log",
-    "uploadSuccess": "Upload Successful"
+    "uploadSuccess": "Upload Successful",
+    "anomalyTitle": "Anomaly",
+    "annotate": "Annotate",
+    "upload": "Upload",
+    "uploadText": "Drag a file or folder here to upload",
+    "deleteTitle": "Delete file",
+    "deleteContent": "Are you sure you want to delete this file?"
+  },
+  "traintask": {
+    "traindata": "Training data",
+    "algorithms": "Training algorithms"
   }
 }

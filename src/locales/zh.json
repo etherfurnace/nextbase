@@ -13,7 +13,8 @@
     "name": "名称",
     "inputMsg": "请输入",
     "selectMsg": "请选择",
-    "successfullyDeleted": "成功删除"
+    "successfullyDeleted": "成功删除",
+    "action": "操作"
   },
   "datasets": {
     "addform": "新增数据集",
@@ -25,6 +26,16 @@
     "anomaly": "单指标异常检测",
     "forecast": "时间序列预测",
     "log": "日志",
-    "uploadSuccess": "上传成功"
+    "uploadSuccess": "上传成功",
+    "anomalyTitle": "异常点",
+    "annotate": "标注",
+    "upload": "上传",
+    "uploadText": "拖动文件或文件夹到此处上传",
+    "deleteTitle": "删除文件",
+    "deleteContent": "确认要删除此文件吗？"
+  },
+  "traintask": {
+    "traindata": "训练数据",
+    "algorithms": "训练算法"
   }
 }
