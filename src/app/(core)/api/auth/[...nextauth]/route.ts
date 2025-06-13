@@ -73,8 +73,17 @@ const authOptions: AuthOptions = {
       };
       return session;
     },
-    async redirect({ baseUrl }) {
-      return baseUrl + '/';
+    async redirect({ url, baseUrl }) {
+      // 如果 url 是相对路径，拼接 baseUrl
+      if (url.startsWith('/')) {
+        return `${baseUrl}${url}`;
+      }
+      // 如果 url 是同域名，直接返回
+      if (new URL(url).origin === baseUrl) {
+        return url;
+      }
+      // 其他情况返回首页
+      return baseUrl;
     }
   }
 };

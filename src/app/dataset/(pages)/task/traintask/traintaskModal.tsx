@@ -8,7 +8,7 @@ import { SupabaseClient, User } from '@supabase/supabase-js';
 interface TrainTaskModalProps {
   supabase: SupabaseClient;
   user: User;
-  options: any,
+  // options: any,
   onSuccess: () => void;
   [key:string]: any
 }
@@ -123,21 +123,21 @@ const TrainTaskModal = ({ ref, supabase, user, options, onSuccess }: TrainTaskMo
             label={t('common.type')}
             rules={[{ required: true, message: t('common.inputMsg') }]}
           >
-            <Input placeholder={t('common.inputMsg')} />
+            <Select placeholder={t('common.inputMsg')} />
           </Form.Item>
           <Form.Item
             name='traindata'
             label={t('traintask.traindata')}
             rules={[{ required: true, message: t('common.inputMsg') }]}
           >
-            <Input placeholder={t('common.inputMsg')} />
+            <Select placeholder={t('common.inputMsg')} />
           </Form.Item>
           <Form.Item
             name='algorithms'
             label={t('traintask.algorithms')}
             rules={[{ required: true, message: t('common.inputMsg') }]}
           >
-            <Input placeholder={t('common.inputMsg')} />
+            <Select placeholder={t('common.inputMsg')} />
           </Form.Item>
           
         </Form>
