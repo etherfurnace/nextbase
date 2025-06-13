@@ -189,7 +189,9 @@ const AnnotationPage = () => {
     setChartLoading(true);
     setTableLoading(true);
     const id = searchParams.get('id');
-    const fileList = await supabase.from('anomaly_detection_train_data').select();
+    const folder_id = searchParams.get('folder_id');
+
+    const fileList = await supabase.from('anomaly_detection_train_data').select().eq('id', folder_id);
     if (fileList.data) {
       const item = fileList.data.find((k: any) => k.id == id);
       const fileData = await supabase.storage.from('datasets').download(item.storage_path + `?t=${Date.now()}`);
@@ -200,7 +202,10 @@ const AnnotationPage = () => {
       setCurrentFileData(data);
       setChartLoading(false);
       setTableLoading(false);
+    } else if (fileList.error) {
+      message.error(fileList.error.message)
     }
+
   };
 
   const onXRangeChange = (data: any[]) => {
@@ -236,7 +241,7 @@ const AnnotationPage = () => {
   };
 
   const onAnnotationClick = (value: any[]) => {
-    if(!value) return;
+    if (!value) return;
     setFlag(true);
     setChartLoading(true);
     try {
