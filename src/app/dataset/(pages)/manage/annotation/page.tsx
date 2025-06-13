@@ -191,7 +191,7 @@ const AnnotationPage = () => {
     const id = searchParams.get('id');
     const folder_id = searchParams.get('folder_id');
 
-    const fileList = await supabase.from('anomaly_detection_train_data').select().eq('id', folder_id);
+    const fileList = await supabase.from('anomaly_detection_train_data').select().eq('dataset_id', folder_id);
     if (fileList.data) {
       const item = fileList.data.find((k: any) => k.id == id);
       const fileData = await supabase.storage.from('datasets').download(item.storage_path + `?t=${Date.now()}`);
