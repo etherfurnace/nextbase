@@ -15,7 +15,8 @@
     "selectMsg": "Please select",
     "successfullyDeleted": "Delete successful!",
     "action": "Action",
-    "type": "Type"
+    "type": "Type",
+    "detail": "Detail"
   },
   "datasets": {
     "addform": "New datasets added",
@@ -38,6 +39,10 @@
   "traintask": {
     "traindata": "Training data",
     "algorithms": "Training algorithms",
-    "addtask": "New training tasks"
+    "addtask": "New training tasks",
+    "history": "History",
+    "executionTime": "Execution time",
+    "executionStatus": "Execution Status",
+    "executionScore": "Execution Score"
   }
 }
