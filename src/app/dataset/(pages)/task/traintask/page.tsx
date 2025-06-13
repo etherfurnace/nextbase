@@ -10,6 +10,7 @@ import { supabase } from '@/utils/supabaseClient';
 // import Icon from '@/components/icon';
 import { ColumnItem } from '@/types';
 import { User } from '@supabase/supabase-js';
+import { ModalConfig,ModalRef } from '../types';
 
 const { Search } = Input;
 
@@ -25,7 +26,7 @@ interface TrainTaskData {
 const TrainTask = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const modalRef = useRef(null);
+  const modalRef = useRef<ModalRef>(null);
   const [user , setUser] = useState<User | null>(null);
   const [tableData, setTableData] = useState<TrainTaskData[]>([]);
   const [loading, setLoading] = useState(false);
@@ -63,29 +64,6 @@ const TrainTask = () => {
       pagination.current * pagination.pageSize
     );
   }, [tableData, pagination.current, pagination.pageSize]);
-
-  useEffect(() => {
-    setPagination(prev => ({
-      ...prev,
-      total: tableData.length,
-    }));
-  }, [tableData]);
-
-  const handleChange = (value: any) => {
-    setPagination(value);
-  };
-
-  const onSearch = (search: string) => {
-    getTasks(search);
-  };
-
-  const onDelete = async (record: TrainTaskData) => {
-    setLoading(true);
-    // TODO: 调用删除接口
-    message.success('删除成功');
-    getTasks();
-    setLoading(false);
-  };
 
   const columns: ColumnItem[] = [
     {
@@ -162,6 +140,41 @@ const TrainTask = () => {
     </div>
   );
 
+  useEffect(() => {
+    setPagination(prev => ({
+      ...prev,
+      total: tableData.length,
+    }));
+  }, [tableData]);
+
+  const handleAdd = () => {
+    if(modalRef.current) {
+      modalRef.current.showModal({
+        type: 'add',
+        title: 'addtask',
+        form: {}
+      })
+    }
+  }
+
+  const handleChange = (value: any) => {
+    setPagination(value);
+  };
+
+  const onSearch = (search: string) => {
+    getTasks(search);
+  };
+
+  const onDelete = async (record: TrainTaskData) => {
+    setLoading(true);
+    // TODO: 调用删除接口
+    message.success('删除成功');
+    getTasks();
+    setLoading(false);
+  };
+
+  
+
   return (
     <div className={`flex w-full h-full text-sm p-[20px] ${sideMenuStyle.sideMenuLayout} grow`}>
       <div className="w-full flex grow flex-1 h-full">
@@ -186,7 +199,7 @@ const TrainTask = () => {
                   onSearch={onSearch}
                   style={{ fontSize: 15 }}
                 />
-                <Button type="primary" className="rounded-md text-xs shadow" onClick={() => message.info('请实现新建任务功能')}>
+                <Button type="primary" className="rounded-md text-xs shadow" onClick={() => handleAdd()}>
                   新建
                 </Button>
               </div>

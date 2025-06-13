@@ -42,6 +42,7 @@
   },
   "traintask": {
     "traindata": "Training data",
-    "algorithms": "Training algorithms"
+    "algorithms": "Training algorithms",
+    "addtask": "New training tasks"
   }
 }
