@@ -14,7 +14,9 @@
     "inputMsg": "请输入",
     "selectMsg": "请选择",
     "successfullyDeleted": "成功删除",
-    "action": "操作"
+    "action": "操作",
+    "type": "类型",
+    "detail": "详情"
   },
   "datasets": {
     "addform": "新增数据集",
@@ -36,6 +38,11 @@
   },
   "traintask": {
     "traindata": "训练数据",
-    "algorithms": "训练算法"
+    "algorithms": "训练算法",
+    "addtask": "新增训练任务",
+    "history": "历史记录",
+    "executionTime": "执行时间",
+    "executionStatus": "执行状态",
+    "executionScore": "执行得分"
   }
 }

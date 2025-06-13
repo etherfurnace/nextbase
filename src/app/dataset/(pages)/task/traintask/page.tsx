@@ -5,8 +5,12 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import CustomTable from '@/components/custom-table';
 import sideMenuStyle from './index.module.scss';
+import TrainTaskModal from './traintaskModal';
+import { supabase } from '@/utils/supabaseClient';
 // import Icon from '@/components/icon';
 import { ColumnItem } from '@/types';
+import { User } from '@supabase/supabase-js';
+import { ModalConfig,ModalRef } from '../types';
 
 const { Search } = Input;
 
@@ -22,6 +26,8 @@ interface TrainTaskData {
 const TrainTask = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const modalRef = useRef<ModalRef>(null);
+  const [user , setUser] = useState<User | null>(null);
   const [tableData, setTableData] = useState<TrainTaskData[]>([]);
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState({
@@ -58,29 +64,6 @@ const TrainTask = () => {
       pagination.current * pagination.pageSize
     );
   }, [tableData, pagination.current, pagination.pageSize]);
-
-  useEffect(() => {
-    setPagination(prev => ({
-      ...prev,
-      total: tableData.length,
-    }));
-  }, [tableData]);
-
-  const handleChange = (value: any) => {
-    setPagination(value);
-  };
-
-  const onSearch = (search: string) => {
-    getTasks(search);
-  };
-
-  const onDelete = async (record: TrainTaskData) => {
-    setLoading(true);
-    // TODO: 调用删除接口
-    message.success('删除成功');
-    getTasks();
-    setLoading(false);
-  };
 
   const columns: ColumnItem[] = [
     {
@@ -148,17 +131,6 @@ const TrainTask = () => {
 
   const Topsection = () => (
     <div className="mb-4 flex w-full gap-4">
-      {/* <div className="w-[216px] rounded-lg flex h-[90px] flex-col items-center justify-center bg-white shadow">
-        <div className="flex justify-center items-center mb-2">
-          <Icon
-            type="chakanshuji"
-            className="mr-2"
-            style={{ height: '22px', width: '22px', color: '#1976d2' }}
-          />
-          <h1 className="text-lg font-bold leading-[24px] text-gray-800">Weops</h1>
-        </div>
-        <p className="text-xs text-gray-500">这是训练任务管理...</p>
-      </div> */}
       <div className="flex-1 flex flex-col justify-center h-[90px] p-4 rounded-lg bg-white shadow">
         <h1 className="text-lg font-bold text-gray-900 mb-1">训练任务</h1>
         <p className="text-xs text-gray-500">
@@ -167,6 +139,41 @@ const TrainTask = () => {
       </div>
     </div>
   );
+
+  useEffect(() => {
+    setPagination(prev => ({
+      ...prev,
+      total: tableData.length,
+    }));
+  }, [tableData]);
+
+  const handleAdd = () => {
+    if(modalRef.current) {
+      modalRef.current.showModal({
+        type: 'add',
+        title: 'addtask',
+        form: {}
+      })
+    }
+  }
+
+  const handleChange = (value: any) => {
+    setPagination(value);
+  };
+
+  const onSearch = (search: string) => {
+    getTasks(search);
+  };
+
+  const onDelete = async (record: TrainTaskData) => {
+    setLoading(true);
+    // TODO: 调用删除接口
+    message.success('删除成功');
+    getTasks();
+    setLoading(false);
+  };
+
+  
 
   return (
     <div className={`flex w-full h-full text-sm p-[20px] ${sideMenuStyle.sideMenuLayout} grow`}>
@@ -192,7 +199,7 @@ const TrainTask = () => {
                   onSearch={onSearch}
                   style={{ fontSize: 15 }}
                 />
-                <Button type="primary" className="rounded-md text-xs shadow" onClick={() => message.info('请实现新建任务功能')}>
+                <Button type="primary" className="rounded-md text-xs shadow" onClick={() => handleAdd()}>
                   新建
                 </Button>
               </div>
@@ -212,6 +219,12 @@ const TrainTask = () => {
           </div>
         </section>
       </div>
+      <TrainTaskModal
+        ref={modalRef}
+        supabase={supabase}
+        user={user as User}
+        onSuccess={() => {}}
+      />
     </div>
   );
 };

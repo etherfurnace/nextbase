@@ -42,6 +42,11 @@
   },
   "traintask": {
     "traindata": "Training data",
-    "algorithms": "Training algorithms"
+    "algorithms": "Training algorithms",
+    "addtask": "New training tasks",
+    "history": "History",
+    "executionTime": "Execution time",
+    "executionStatus": "Execution Status",
+    "executionScore": "Execution Score"
   }
 }
