@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { Empty, Tooltip as Tip } from 'antd';
 import {
   XAxis,
@@ -100,63 +100,29 @@ const LineChart: React.FC<LineChartProps> = ({
     return [Math.min(...times), Math.max(...times)];
   }, [data]);
 
-  useEffect(() => {
-    const chartKeys = getChartAreaKeys(data);
-    const chartDetails = getDetails(data);
-    if (data.length) getEvent();
-    // setTimeline({
-    //   startIndex: 0,
-    //   endIndex: data.length > 10 ? Math.floor(data.length / 10) : (data.length > 1 ? data.length - 1 : 0)
-    // });
-    setHasDimension(
-      !Object.values(chartDetails || {}).every((item) => !item.length)
-    );
-    setDetails(chartDetails);
-    setVisibleAreas(chartKeys); // 默认显示所有area
-    const generatedColors = chartKeys.map(() => generateUniqueRandomColor());
-    setColors((prev: string[]) => {
-      return [
-        ...prev,
-        ...generatedColors.slice(prev.length, generatedColors.length),
-      ];
-    });
-  }, [data]);
-
-  useEffect(() => {
-    getEvent();
-  }, [formID]);
-
-  useEffect(() => {
+  // 优化事件处理函数，使用 useCallback 避免频繁重新创建
+  const handleMouseDown = useCallback((e: any) => {
     if (!allowSelect) return;
-    const handleGlobalMouseUp = () => {
-      if (isDragging) {
-        handleMouseUp();
-      }
-    };
-    window.addEventListener('mouseup', handleGlobalMouseUp);
-    return () => {
-      window.removeEventListener('mouseup', handleGlobalMouseUp);
-    };
-  }, [isDragging, startX, endX]);
-
-  const handleMouseDown = (e: any) => {
-    if (!allowSelect) return;
-    setStartX((pre) => e.activeLabel || pre);
-    setIsDragging(true);
-    document.body.style.userSelect = 'none'; // 禁用文本选择
-  };
-
-  const handleMouseMove = (e: any) => {
-    if (!allowSelect) return;
-    if (isDragging) {
-      setEndX((pre) => e.activeLabel || pre);
+    const activeLabel = e.activeLabel;
+    if (activeLabel !== undefined) {
+      setStartX(activeLabel);
+      setIsDragging(true);
+      document.body.style.userSelect = 'none';
     }
-  };
+  }, [allowSelect]);
 
-  const handleMouseUp = () => {
+  const handleMouseMove = useCallback((e: any) => {
+    if (!allowSelect || !isDragging) return;
+    const activeLabel = e.activeLabel;
+    if (activeLabel !== undefined) {
+      setEndX(activeLabel);
+    }
+  }, [allowSelect, isDragging]);
+
+  const handleMouseUp = useCallback(() => {
     if (!allowSelect) return;
     setIsDragging(false);
-    document.body.style.userSelect = ''; // 重新启用文本选择
+    document.body.style.userSelect = '';
     if (startX !== null && endX !== null) {
       const selectedTimeRange: [Dayjs, Dayjs] = [
         dayjs(Math.min(startX, endX) * 1000),
@@ -166,17 +132,90 @@ const LineChart: React.FC<LineChartProps> = ({
     }
     setStartX(null);
     setEndX(null);
-  };
+  }, [allowSelect, startX, endX, onXRangeChange]);
 
-  const handleLegendClick = (key: string) => {
+  // 优化点击事件处理，减少数据处理开销
+  const onClick = useCallback((data: any) => {
+    if (!data?.activePayload) return;
+
+    // 使用 requestAnimationFrame 延迟处理，避免阻塞渲染
+    requestAnimationFrame(() => {
+      const arr = data.activePayload.map((item: any) => item?.payload);
+      onAnnotationClick(arr);
+    });
+  }, [onAnnotationClick]);
+
+  // 优化渲染函数，使用 useCallback 避免重新创建
+  const renderDot = useCallback((props: any) => {
+    const { cx, cy, payload, index } = props;
+    const { label } = payload;
+    if (label === 1) {
+      return <circle key={index} cx={cx} cy={cy} r={2} fill="red" />;
+    }
+    return <g key={index} />;
+  }, []);
+
+  const renderMinDot = useCallback((props: any) => {
+    const { cx, cy, payload, index } = props;
+    const { label } = payload;
+    if (label === 1) {
+      return <circle key={index} cx={cx} cy={cy} r={0.4} fill="red" />;
+    }
+    return <g key={index} />;
+  }, []);
+
+  // 优化图例点击处理
+  const handleLegendClick = useCallback((key: string) => {
     setVisibleAreas((prevVisibleAreas) =>
       prevVisibleAreas.includes(key)
         ? prevVisibleAreas.filter((area) => area !== key)
         : [...prevVisibleAreas, key]
     );
-  };
+  }, []);
 
-  const renderYAxisTick = (props: any) => {
+  // 添加防抖的 ref
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // 修复防抖逻辑
+  const indexChange = useCallback((value: any) => {
+    // 清除之前的定时器
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    // 设置新的定时器
+    timeoutRef.current = setTimeout(() => {
+      onTimeLineChange(value);
+    }, 100); // 增加防抖时间到100ms，减少抖动
+  }, [onTimeLineChange]);
+
+  // 清理定时器
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
+
+  // 优化全局鼠标事件监听器，减少依赖项
+  useEffect(() => {
+    if (!allowSelect) return;
+
+    const handleGlobalMouseUp = () => {
+      if (isDragging) {
+        handleMouseUp();
+      }
+    };
+
+    window.addEventListener('mouseup', handleGlobalMouseUp);
+    return () => {
+      window.removeEventListener('mouseup', handleGlobalMouseUp);
+    };
+  }, [isDragging, handleMouseUp]);
+
+  // 优化 renderYAxisTick，使用 useCallback
+  const renderYAxisTick = useCallback((props: any) => {
     const { x, y, payload } = props;
     let label = String(payload.value);
     if (isStringArray(unit)) {
@@ -185,7 +224,7 @@ const LineChart: React.FC<LineChartProps> = ({
       )?.name;
       label = unitName || label;
     }
-    const maxLength = 6; // 设置标签的最大长度
+    const maxLength = 6;
     return (
       <text
         x={x}
@@ -201,7 +240,68 @@ const LineChart: React.FC<LineChartProps> = ({
           : label}
       </text>
     );
-  };
+  }, [unit]);
+
+  // 优化 Brush 的 startIndex 和 endIndex 计算
+  const brushStartIndex = useMemo(() => {
+    return Math.max(0, Math.min(timeline.startIndex, Math.max(0, data.length - 1)));
+  }, [timeline.startIndex, data.length]);
+
+  const brushEndIndex = useMemo(() => {
+    return Math.max(0, Math.min(timeline.endIndex, Math.max(0, data.length - 1)));
+  }, [timeline.endIndex, data.length]);
+
+  const chartKeys = useMemo(() => getChartAreaKeys(data), [data]);
+  const chartDetails = useMemo(() => getDetails(data), [data]);
+
+  useEffect(() => {
+    if (data.length) getEvent();
+
+    setHasDimension(
+      !Object.values(chartDetails || {}).every((item) => !item.length)
+    );
+    setDetails(chartDetails);
+    setVisibleAreas(chartKeys);
+
+    const generatedColors = chartKeys.map(() => generateUniqueRandomColor());
+    setColors((prev: string[]) => {
+      return [
+        ...prev,
+        ...generatedColors.slice(prev.length, generatedColors.length),
+      ];
+    });
+  }, [data, chartKeys, chartDetails]);
+
+  useEffect(() => {
+    getEvent();
+  }, [formID]);
+
+  // const renderYAxisTick = (props: any) => {
+  //   const { x, y, payload } = props;
+  //   let label = String(payload.value);
+  //   if (isStringArray(unit)) {
+  //     const unitName = JSON.parse(unit).find(
+  //       (item: ListItem) => item.id === +label
+  //     )?.name;
+  //     label = unitName || label;
+  //   }
+  //   const maxLength = 6; // 设置标签的最大长度
+  //   return (
+  //     <text
+  //       x={x}
+  //       y={y}
+  //       textAnchor="end"
+  //       fontSize={14}
+  //       fill="var(--color-text-3)"
+  //       dy={4}
+  //     >
+  //       {label.length > maxLength && <title>{label}</title>}
+  //       {label.length > maxLength
+  //         ? `${label.slice(0, maxLength - 1)}...`
+  //         : label}
+  //     </text>
+  //   );
+  // };
 
   const getEvent = async () => {
     if (!formID) return;
@@ -273,40 +373,40 @@ const LineChart: React.FC<LineChartProps> = ({
     return Math.floor(new Date(time).getTime() / 1000);
   };
 
-  const indexChange = (value: any) => {
-    onTimeLineChange(value);
-  };
+  // const indexChange = (value: any) => {
+  //   onTimeLineChange(value);
+  // };
 
-  const onClick = (data: any) => {
-    if(!data) return [];
-    const { activePayload } = data;
-    const arr = activePayload?.map((item: any) => item?.payload)
-    onAnnotationClick(arr);
-  };
+  // const onClick = (data: any) => {
+  //   if (!data) return [];
+  //   const { activePayload } = data;
+  //   const arr = activePayload?.map((item: any) => item?.payload)
+  //   onAnnotationClick(arr);
+  // };
 
-  const renderDot = (props: any) => {
-    const { cx, cy, payload, index } = props;
-    const { label } = payload;
-    if ((label && label === 1)) {
-      return <circle key={index} cx={cx} cy={cy} r={1.5} fill="red" />;
-    } else {
-      return <g key={index} />;
-    }
-  };
+  // const renderDot = (props: any) => {
+  //   const { cx, cy, payload, index } = props;
+  //   const { label } = payload;
+  //   if ((label && label === 1)) {
+  //     return <circle key={index} cx={cx} cy={cy} r={1.5} fill="red" />;
+  //   } else {
+  //     return <g key={index} />;
+  //   }
+  // };
 
-  const renderMinDot = (props: any) => {
-    const { cx, cy, payload, index } = props;
-    const { label } = payload;
-    if (label && label === 1) {
-      return (
-        <circle key={index} cx={cx} cy={cy} r={.3} fill="red" />
-      )
-    } else {
-      return (
-        <g key={index} />
-      )
-    }
-  };
+  // const renderMinDot = (props: any) => {
+  //   const { cx, cy, payload, index } = props;
+  //   const { label } = payload;
+  //   if (label && label === 1) {
+  //     return (
+  //       <circle key={index} cx={cx} cy={cy} r={.3} fill="red" />
+  //     )
+  //   } else {
+  //     return (
+  //       <g key={index} />
+  //     )
+  //   }
+  // };
 
   return (
     <div
@@ -321,7 +421,7 @@ const LineChart: React.FC<LineChartProps> = ({
               margin={{
                 top: 10,
                 right: formID ? 20 : 0,
-                left: 0,
+                left: -20,
                 bottom: 0,
               }}
               onClick={onClick}
@@ -366,7 +466,7 @@ const LineChart: React.FC<LineChartProps> = ({
                   />
                 }
               />
-              {getChartAreaKeys(data).map((key, index) => (
+              {chartKeys.map((key, index) => (
                 <Area
                   key={index}
                   type="monotone"
@@ -376,6 +476,7 @@ const LineChart: React.FC<LineChartProps> = ({
                   fillOpacity={0}
                   fill={colors[index]}
                   hide={!visibleAreas.includes(key)}
+                  isAnimationActive={false}
                 />
               ))}
               {isDragging &&
@@ -394,13 +495,13 @@ const LineChart: React.FC<LineChartProps> = ({
                 height={30}
                 travellerWidth={5}
                 stroke="#8884d8"
-                startIndex={Math.max(0, Math.min(timeline.startIndex, Math.max(0, data.length - 1)))}
-                endIndex={Math.max(0, Math.min(timeline.endIndex, Math.max(0, data.length - 1)))}
+                startIndex={brushStartIndex}
+                endIndex={brushEndIndex}
                 onChange={indexChange}
                 tickFormatter={(tick) => formatTime(tick, minTime, maxTime)}
               >
                 <AreaChart data={data}>
-                  {getChartAreaKeys(data).map((key, index) => (
+                  {chartKeys.map((key, index) => (
                     <Area
                       key={key}
                       type="monotone"

@@ -42,6 +42,7 @@
   },
   "traintask": {
     "traindata": "训练数据",
-    "algorithms": "训练算法"
+    "algorithms": "训练算法",
+    "addtask": "新增训练任务"
   }
 }

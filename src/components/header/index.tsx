@@ -86,7 +86,7 @@ export default function Header() {
         ))}
       </nav>
       <div>
-        {session?.user ? (
+        {session?.user && (
           <div className="flex items-center gap-2">
             <Dropdown
               menu={{
@@ -108,13 +108,6 @@ export default function Header() {
               </a>
             </Dropdown>
           </div>
-        ) : (
-          <button
-            onClick={() => window.location.href = "/api/auth/signin?csrf=true"}
-            className="text-sm px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
-          >
-            {t('common.login')}
-          </button>
         )}
       </div>
     </header>

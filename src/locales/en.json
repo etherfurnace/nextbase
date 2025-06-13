@@ -14,7 +14,8 @@
     "inputMsg": "Please enter",
     "selectMsg": "Please select",
     "successfullyDeleted": "Delete successful!",
-    "action": "Action"
+    "action": "Action",
+    "type": "Type"
   },
   "datasets": {
     "addform": "New datasets added",
@@ -36,6 +37,7 @@
   },
   "traintask": {
     "traindata": "Training data",
-    "algorithms": "Training algorithms"
+    "algorithms": "Training algorithms",
+    "addtask": "New training tasks"
   }
 }

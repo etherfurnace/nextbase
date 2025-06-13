@@ -23,6 +23,7 @@ const UploadModal = ({ ref, onSuccess }: { ref: any; onSuccess: () => void }) =>
     showModal: ({ type, form }: ModalConfig) => {
       setVisiable(true);
       setFormData(form);
+      console.log(form);
     }
   }));
 
@@ -57,7 +58,7 @@ const UploadModal = ({ ref, onSuccess }: { ref: any; onSuccess: () => void }) =>
     }
     const { data, error } = await supabase.storage
       .from('datasets')
-      .upload(`${formData.folder}/${file.name}`, file.originFileObj, {
+      .upload(`${formData.dataset_id}/${file.name}`, file.originFileObj, {
         cacheControl: '3600',
         upsert: false
       });
